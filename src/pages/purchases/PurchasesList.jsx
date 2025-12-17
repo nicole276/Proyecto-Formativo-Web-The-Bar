@@ -31,7 +31,7 @@ export default function PurchasesList() {
         { productoId: 1, nombre: 'Ron Medellín', cantidad: 12, precio: 40000, subtotal: 480000 },
       ],
       total: 480000,
-      estado: 'Recibida',
+      estado: 'Pendiente',
     },
     {
       id: 2,
@@ -44,6 +44,18 @@ export default function PurchasesList() {
       ],
       total: 120000,
       estado: 'Recibida',
+    },
+    {
+      id: 3,
+      fecha: '2025-12-15',
+      proveedorId: 1,
+      proveedorNombre: 'Distribuidora Andina',
+      factura: 'FAC-003',
+      productos: [
+        { productoId: 1, nombre: 'Ron Medellín', cantidad: 5, precio: 42000, subtotal: 210000 },
+      ],
+      total: 210000,
+      estado: 'Anulada',
     },
   ]);
   const [search, setSearch] = useState('');
@@ -86,15 +98,50 @@ export default function PurchasesList() {
     setPurchaseToAnular(null);
   };
 
-  const handleAnular = (purchase) => {
-    if (purchase.estado !== 'Pendiente') {
+  const handleStatusChange = (purchase, newStatus) => {
+    // Verificar que no se pueda cambiar el estado de una compra anulada o recibida
+    if (purchase.estado === 'Anulada' || purchase.estado === 'Recibida') {
       setAlert({
         type: 'error',
-        message: `No se puede anular la compra "${purchase.factura}" porque ya fue ${purchase.estado}.`,
+        message: `No se puede cambiar el estado de una compra ${purchase.estado}.`,
       });
-      setTimeout(() => setAlert(null), 4000);
+      setTimeout(() => setAlert(null), 3000);
       return;
     }
+
+    // No hacer nada si ya está en el mismo estado
+    if (purchase.estado === newStatus) return;
+
+    setPurchases(purchases.map(p =>
+      p.id === purchase.id ? { ...p, estado: newStatus } : p
+    ));
+    
+    setAlert({ 
+      type: 'success', 
+      message: `Compra "${purchase.factura}" marcada como ${newStatus}` 
+    });
+    setTimeout(() => setAlert(null), 2000);
+  };
+
+  const handleAnular = (purchase) => {
+    if (purchase.estado === 'Anulada') {
+      setAlert({
+        type: 'error',
+        message: `La compra "${purchase.factura}" ya está anulada.`,
+      });
+      setTimeout(() => setAlert(null), 3000);
+      return;
+    }
+    
+    if (purchase.estado === 'Recibida') {
+      setAlert({
+        type: 'error',
+        message: `No se puede anular la compra "${purchase.factura}" porque ya fue recibida.`,
+      });
+      setTimeout(() => setAlert(null), 3000);
+      return;
+    }
+    
     setPurchaseToAnular(purchase);
     setShowAnularDialog(true);
   };
@@ -197,30 +244,67 @@ export default function PurchasesList() {
                     ${purchase.total.toLocaleString()}
                   </td>
                   <td style={{ padding: '1rem 1.2rem', textAlign: 'center' }}>
+                    {/* Solo mostrar dropdown si está Pendiente */}
                     {purchase.estado === 'Pendiente' ? (
-                      <span
+                      <select
+                        value={purchase.estado}
+                        onChange={(e) => handleStatusChange(purchase, e.target.value)}
                         style={{
-                          padding: '0.3rem 0.8rem',
+                          padding: '0.4rem 0.8rem',
                           borderRadius: '20px',
                           backgroundColor: 'rgba(244, 183, 63, 0.15)',
-                          color: '#F4B73F',
-                          fontSize: '0.85rem',
-                          fontWeight: '600',
                           border: '1px solid #F4B73F',
+                          color: '#F4B73F',
+                          fontWeight: '600',
+                          fontSize: '0.85rem',
+                          cursor: 'pointer',
+                          outline: 'none',
+                          minWidth: '120px',
+                          textAlign: 'center',
+                          appearance: 'none',
+                          WebkitAppearance: 'none',
+                          MozAppearance: 'none',
+                          paddingRight: '30px',
+                          position: 'relative',
+                          backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
+                          backgroundRepeat: 'no-repeat',
+                          backgroundPosition: 'right 10px center',
+                          backgroundSize: '12px'
                         }}
                       >
-                        ⏳ Pendiente
-                      </span>
+                        <option 
+                          value="Pendiente" 
+                          style={{ 
+                            backgroundColor: 'white', 
+                            color: '#F4B73F',
+                            padding: '8px'
+                          }}
+                        >
+                          ⏳ Pendiente
+                        </option>
+                        <option 
+                          value="Recibida" 
+                          style={{ 
+                            backgroundColor: 'white', 
+                            color: '#28a745',
+                            padding: '8px'
+                          }}
+                        >
+                          ✅ Recibida
+                        </option>
+                      </select>
                     ) : purchase.estado === 'Recibida' ? (
                       <span
                         style={{
-                          padding: '0.3rem 0.8rem',
+                          padding: '0.4rem 0.8rem',
                           borderRadius: '20px',
                           backgroundColor: 'rgba(40, 167, 69, 0.15)',
                           color: '#28a745',
-                          fontSize: '0.85rem',
                           fontWeight: '600',
+                          fontSize: '0.85rem',
                           border: '1px solid #28a745',
+                          display: 'inline-block',
+                          minWidth: '120px',
                         }}
                       >
                         ✅ Recibida
@@ -228,13 +312,15 @@ export default function PurchasesList() {
                     ) : (
                       <span
                         style={{
-                          padding: '0.3rem 0.8rem',
+                          padding: '0.4rem 0.8rem',
                           borderRadius: '20px',
                           backgroundColor: 'rgba(220, 53, 69, 0.15)',
                           color: '#dc3545',
-                          fontSize: '0.85rem',
                           fontWeight: '600',
+                          fontSize: '0.85rem',
                           border: '1px solid #dc3545',
+                          display: 'inline-block',
+                          minWidth: '120px',
                         }}
                       >
                         ❌ Anulada
@@ -263,6 +349,8 @@ export default function PurchasesList() {
                       >
                         👁️
                       </button>
+                      
+                      {/* Solo mostrar botón de editar si está Pendiente */}
                       {purchase.estado === 'Pendiente' && (
                         <button
                           onClick={() => {
@@ -288,27 +376,31 @@ export default function PurchasesList() {
                           ✏️
                         </button>
                       )}
-                      <button
-                        onClick={() => handleAnular(purchase)}
-                        disabled={purchase.estado !== 'Pendiente'}
-                        style={{
-                          padding: '0.5rem',
-                          backgroundColor: purchase.estado === 'Pendiente' ? '#ffe8e8' : '#f5f5f5',
-                          color: purchase.estado === 'Pendiente' ? '#e53e3e' : '#999',
-                          border: 'none',
-                          borderRadius: '10px',
-                          fontSize: '0.9rem',
-                          fontWeight: '600',
-                          cursor: purchase.estado === 'Pendiente' ? 'pointer' : 'not-allowed',
-                          width: '40px',
-                          height: '40px',
-                          display: 'flex',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <BlockRoundedIcon sx={{ fontSize: '1.1rem', color: '#dc3545' }} />
-                      </button>
+                      
+                      {/* Solo mostrar botón de anular si está Pendiente */}
+                      {purchase.estado === 'Pendiente' && (
+                        <button
+                          onClick={() => handleAnular(purchase)}
+                          style={{
+                            padding: '0.5rem',
+                            backgroundColor: '#ffe8e8',
+                            color: '#e53e3e',
+                            border: 'none',
+                            borderRadius: '10px',
+                            fontSize: '0.9rem',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            width: '40px',
+                            height: '40px',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                          }}
+                          title="Anular compra"
+                        >
+                          <BlockRoundedIcon sx={{ fontSize: '1.1rem', color: '#dc3545' }} />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
