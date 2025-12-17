@@ -264,7 +264,7 @@ export default function HomePage() {
           textAlign: 'center', 
           marginBottom: '2rem'
         }}>
-          Nuestra Galería
+          Nuestros Productos
         </h2>
         
         <div style={{
@@ -359,13 +359,13 @@ export default function HomePage() {
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
             <div>
-              <h3 style={{ color: '#3B2E2A', fontSize: '1.4rem', fontWeight: '700', marginBottom: '0.5rem' }}>misión</h3>
+              <h3 style={{ color: '#3B2E2A', fontSize: '1.4rem', fontWeight: '700', marginBottom: '0.5rem' }}>Misión</h3>
               <p style={{ color: '#666', lineHeight: 1.6 }}>
                 Ofrecer productos de alta calidad en licores, cigarrería y confitería, con un servicio cálido y profesional que refleje la esencia de THE BAR.
               </p>
             </div>
             <div>
-              <h3 style={{ color: '#3B2E2A', fontSize: '1.4rem', fontWeight: '700', marginBottom: '0.5rem' }}>visión</h3>
+              <h3 style={{ color: '#3B2E2A', fontSize: '1.4rem', fontWeight: '700', marginBottom: '0.5rem' }}>Visión</h3>
               <p style={{ color: '#666', lineHeight: 1.6 }}>
                 Ser el referente en el barrio para los amantes de los buenos tragos, el tabaco premium y los snacks de calidad.
               </p>
@@ -378,18 +378,47 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Mapa */}
-      <div style={{ padding: '2rem 1rem', backgroundColor: 'white' }}>
-        <h2 style={{ color: '#3B2E2A', fontSize: '1.8rem', fontWeight: '700', textAlign: 'center', marginBottom: '1.5rem' }}>
-          Ubicación
+      {/* Mapa y Dirección */}
+      <div style={{ padding: '2rem 1rem', backgroundColor: 'white', borderRadius: '16px', boxShadow: '0 6px 20px rgba(0,0,0,0.06)', border: '1px solid #eee' }}>
+        <h2 style={{ 
+          color: '#3B2E2A', 
+          fontSize: '1.8rem', 
+          fontWeight: '700', 
+          textAlign: 'center', 
+          marginBottom: '1.2rem' 
+        }}>
+          📍 Nuestra Ubicación
         </h2>
+
+        {/* Dirección destacada */}
+        <div style={{ 
+          backgroundColor: '#fdfcf9', 
+          border: '1px solid #f0ece7', 
+          borderRadius: '12px', 
+          padding: '1.2rem', 
+          marginBottom: '1.5rem',
+          textAlign: 'center',
+        }}>
+          <p style={{ 
+            color: '#3B2E2A', 
+            fontSize: '1.1rem', 
+            fontWeight: '600',
+            lineHeight: 1.5,
+            margin: 0
+          }}>
+            <strong>Calle 57B # 17A - 25</strong><br />
+            Barrio 13 de Noviembre, Buenos Aires
+          </p>
+        </div>
+
+        {/* Mapa */}
         <div
           style={{
             height: '300px',
-            backgroundColor: '#eee',
             borderRadius: '12px',
             overflow: 'hidden',
             border: '1px solid #e0d9d2',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
           }}
         >
           <iframe
@@ -400,6 +429,7 @@ export default function HomePage() {
             allowFullScreen=""
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
+            title="Ubicación de THE BAR"
           ></iframe>
         </div>
       </div>

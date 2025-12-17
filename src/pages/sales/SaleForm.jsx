@@ -272,17 +272,6 @@ export default function SaleForm({ sale = null, clients, products, onSave, onCan
     <div style={{ padding: '0 1rem 1rem', maxWidth: '1200px', margin: '0 auto' }}>
       {alert && <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />}
 
-      <h2 style={{ 
-        color: '#3B2E2A', 
-        fontSize: '1.4rem', 
-        fontWeight: '700',
-        marginBottom: '1rem',
-        paddingBottom: '0.5rem',
-        borderBottom: '2px solid #F4B73F'
-      }}>
-        {sale ? 'Actualizar Venta' : 'Registrar Venta'}
-      </h2>
-
       <form onSubmit={handleSubmit}>
         {/* SECCIÓN 1: INFORMACIÓN DE LA VENTA - SOLO 2 CAMPOS */}
         <div style={{ 

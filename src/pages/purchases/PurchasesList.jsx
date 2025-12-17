@@ -343,19 +343,7 @@ export default function PurchasesList() {
           width="600px"
         >
           <div style={{ padding: '0.5rem' }}>
-            {/* Encabezado principal */}
-            <div style={{ marginBottom: '1rem' }}>
-              <h1 style={{ 
-                fontSize: '1.5rem', 
-                fontWeight: 'bold', 
-                color: '#000', 
-                margin: '0 0 0.5rem 0',
-                borderBottom: '2px solid #e5e7eb',
-                paddingBottom: '0.5rem'
-              }}>
-                Detalles de la Compra
-              </h1>
-              
+            <div>
               {/* Factura y estado */}
               <div style={{ 
                 display: 'flex', 
@@ -723,7 +711,7 @@ export default function PurchasesList() {
       {showForm && (
         <Modal
           isOpen={showForm}
-          title={editingPurchase ? '✏️ Editar Compra' : '✅ Registrar Compra'}
+          title={editingPurchase ? '✏️ Editar Compra' : '✅ Registrar Nueva Compra'}
           onClose={() => {
             setShowForm(false);
             setEditingPurchase(null);

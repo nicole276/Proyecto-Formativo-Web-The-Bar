@@ -772,14 +772,7 @@ export default function Dashboard() {
       </div>
 
       {/* Vista actual */}
-      <div
-        style={{
-          minHeight: '60vh',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1.5rem',
-        }}
-      >
+      <div>
         {view === 'general' && <GeneralView data={currentData} />}
         {view === 'ventas' && <VentasView data={currentData} />}
         {view === 'compras' && <ComprasView data={currentData} />}

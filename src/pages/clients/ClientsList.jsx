@@ -178,9 +178,9 @@ export default function ClientsList() {
           <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '850px' }}>
             <thead>
               <tr style={{ backgroundColor: '#f8f6f4' }}>
-                <th style={{ padding: '1rem 1.2rem', textAlign: 'left', fontWeight: '700', color: '#3B2E2A', borderBottom: '2px solid #e0d9d2' }}>Nombre Completo</th>
+                <th style={{ padding: '1rem 1.2rem', textAlign: 'left', fontWeight: '700', color: '#3B2E2A', borderBottom: '2px solid #e0d9d2' }}>Tipo Documento</th>
                 <th style={{ padding: '1rem 1.2rem', textAlign: 'left', fontWeight: '700', color: '#3B2E2A', borderBottom: '2px solid #e0d9d2' }}>Documento</th>
-                <th style={{ padding: '1rem 1.2rem', textAlign: 'left', fontWeight: '700', color: '#3B2E2A', borderBottom: '2px solid #e0d9d2' }}>Número</th>
+                <th style={{ padding: '1rem 1.2rem', textAlign: 'left', fontWeight: '700', color: '#3B2E2A', borderBottom: '2px solid #e0d9d2' }}>Nombre Completo</th>
                 <th style={{ padding: '1rem 1.2rem', textAlign: 'left', fontWeight: '700', color: '#3B2E2A', borderBottom: '2px solid #e0d9d2' }}>Teléfono</th>
                 <th style={{ padding: '1rem 1.2rem', textAlign: 'center', fontWeight: '700', color: '#3B2E2A', borderBottom: '2px solid #e0d9d2' }}>Estado</th>
                 <th style={{ padding: '1rem 1.2rem', textAlign: 'center', fontWeight: '700', color: '#3B2E2A', borderBottom: '2px solid #e0d9d2' }}>Acciones</th>
@@ -189,14 +189,14 @@ export default function ClientsList() {
             <tbody>
               {filteredClients.map((client) => (
                 <tr key={client.id} style={{ borderBottom: '1px solid #f0eee9' }}>
-                  <td style={{ padding: '1rem 1.2rem', color: '#3B2E2A', fontWeight: '600' }}>
-                    {client.nombre}
-                  </td>
                   <td style={{ padding: '1rem 1.2rem', color: '#666', fontSize: '0.9rem' }}>
                     {getDocTypeLabel(client.tipoDocumento)}
                   </td>
                   <td style={{ padding: '1rem 1.2rem', color: '#666', fontWeight: '600' }}>
                     {client.documento}
+                  </td>
+                  <td style={{ padding: '1rem 1.2rem', color: '#3B2E2A', fontWeight: '600' }}>
+                    {client.nombre}
                   </td>
                   <td style={{ padding: '1rem 1.2rem', color: '#666', fontSize: '0.9rem' }}>
                     {client.telefono || '—'}
@@ -222,20 +222,41 @@ export default function ClientsList() {
                     </div>
                   </td>
                   <td style={{ padding: '1rem 1.2rem', textAlign: 'center' }}>
-                    <div style={{ display: 'flex', gap: '0.6rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                    <div style={{ 
+                      display: 'flex', 
+                      gap: '0.6rem', 
+                      justifyContent: 'center', 
+                      flexWrap: 'nowrap',
+                      alignItems: 'center'
+                    }}>
                       <button
                         onClick={() => setViewingClient(client)}
                         style={{
-                          padding: '0.5rem 1rem',
+                          padding: '0.5rem',
                           backgroundColor: '#e8f4ff',
                           color: '#007bff',
                           border: 'none',
-                          borderRadius: '10px',
+                          borderRadius: '8px',
                           fontSize: '0.9rem',
                           fontWeight: '600',
+                          cursor: 'pointer',
+                          width: '40px',
+                          height: '40px',
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#d0e7ff';
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = '#e8f4ff';
+                          e.currentTarget.style.transform = 'translateY(0)';
                         }}
                       >
-                        👁️ 
+                        👁️
                       </button>
                       <button
                         onClick={() => {
@@ -243,16 +264,31 @@ export default function ClientsList() {
                           setShowForm(true);
                         }}
                         style={{
-                          padding: '0.5rem 1rem',
+                          padding: '0.5rem',
                           backgroundColor: '#fff3cd',
                           color: '#856404',
                           border: 'none',
-                          borderRadius: '10px',
+                          borderRadius: '8px',
                           fontSize: '0.9rem',
                           fontWeight: '600',
+                          cursor: 'pointer',
+                          width: '40px',
+                          height: '40px',
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#ffeaa7';
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = '#fff3cd';
+                          e.currentTarget.style.transform = 'translateY(0)';
                         }}
                       >
-                        ✏️ 
+                        ✏️
                       </button>
                       <button
                         onClick={() => handleDelete(client)}
@@ -260,14 +296,14 @@ export default function ClientsList() {
                         title={
                           client.estado === 'activo'
                             ? 'No se puede eliminar un cliente activo. Cambie su estado a "Inactivo" primero.'
-                            : ''
+                            : 'Eliminar cliente'
                         }
                         style={{
                           padding: '0.5rem',
                           backgroundColor: client.estado === 'activo' ? '#f5f5f5' : '#ffe8e8',
                           color: client.estado === 'activo' ? '#999' : '#e53e3e',
                           border: 'none',
-                          borderRadius: '10px',
+                          borderRadius: '8px',
                           fontSize: '0.9rem',
                           fontWeight: '600',
                           cursor: client.estado === 'activo' ? 'not-allowed' : 'pointer',
@@ -276,6 +312,19 @@ export default function ClientsList() {
                           display: 'flex',
                           justifyContent: 'center',
                           alignItems: 'center',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          if (client.estado !== 'activo') {
+                            e.currentTarget.style.backgroundColor = '#fecaca';
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (client.estado !== 'activo') {
+                            e.currentTarget.style.backgroundColor = '#ffe8e8';
+                            e.currentTarget.style.transform = 'translateY(0)';
+                          }
                         }}
                       >
                         🗑️
@@ -313,14 +362,7 @@ export default function ClientsList() {
           onClose={() => setViewingClient(null)}
           width="550px"
         >
-          <div style={{ 
-            backgroundColor: '#f8f6f4',
-            borderRadius: '12px',
-            padding: '1rem',
-            border: '1px solid #e0d9d2',
-            maxHeight: '80vh',
-            overflowY: 'auto'
-          }}>
+          <div>
             {/* Header con nombre y estado */}
             <div style={{ 
               display: 'flex', 
@@ -587,7 +629,7 @@ export default function ClientsList() {
       {showForm && (
         <Modal
           isOpen={showForm}
-          title={editingClient ? 'Editar Cliente' : 'Registrar Nuevo Cliente'}
+          title={editingClient ? '✏️ Editar Cliente' : '✅ Registrar Nuevo Cliente'}
           onClose={() => {
             setShowForm(false);
             setEditingClient(null);

@@ -289,12 +289,7 @@ export default function RolesList() {
           onClose={() => setViewingRole(null)}
           width="800px"
         >
-          <div style={{ 
-            backgroundColor: '#f8f6f4', 
-            borderRadius: '12px', 
-            padding: '1.5rem',
-            border: '1px solid #e0d9d2'
-          }}>
+          <div>
             {/* Sección de Información Principal */}
             <div style={{ 
               backgroundColor: 'white', 

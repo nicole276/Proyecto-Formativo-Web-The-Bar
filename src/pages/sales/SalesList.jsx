@@ -364,19 +364,7 @@ export default function SalesList() {
           width="600px"
         >
           <div style={{ padding: '0.5rem' }}>
-            {/* Encabezado principal */}
-            <div style={{ marginBottom: '1rem' }}>
-              <h1 style={{ 
-                fontSize: '1.5rem', 
-                fontWeight: 'bold', 
-                color: '#000', 
-                margin: '0 0 0.5rem 0',
-                borderBottom: '2px solid #e5e7eb',
-                paddingBottom: '0.5rem'
-              }}>
-                Detalles de la Venta
-              </h1>
-              
+            <div>
               {/* Factura y estado */}
               <div style={{ 
                 display: 'flex', 
@@ -669,7 +657,7 @@ export default function SalesList() {
       {showForm && (
         <Modal
           isOpen={showForm}
-          title={editingSale ? '✏️ Editar Venta' : '✅ Registrar Venta'}
+          title={editingSale ? '✏️ Editar Venta' : '✅ Registrar Nueva Venta'}
           onClose={() => {
             setShowForm(false);
             setEditingSale(null);

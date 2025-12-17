@@ -327,18 +327,7 @@ export default function ProductsList() {
         >
           <div style={{ padding: '0.5rem' }}>
             {/* Encabezado principal */}
-            <div style={{ marginBottom: '1.25rem' }}>
-              <h1 style={{ 
-                fontSize: '1.5rem', 
-                fontWeight: 'bold', 
-                color: '#000', 
-                margin: '0 0 0.5rem 0',
-                borderBottom: '2px solid #e5e7eb',
-                paddingBottom: '0.5rem'
-              }}>
-                Detalles del Producto
-              </h1>
-              
+            <div>
               {/* Nombre del producto con estado */}
               <div style={{ 
                 display: 'flex', 
@@ -653,7 +642,7 @@ export default function ProductsList() {
       {showForm && (
         <Modal
           isOpen={showForm}
-          title={editingProduct ? '✏️ Editar Producto' : '✅ Registrar Producto'}
+          title={editingProduct ? '✏️ Editar Producto' : '✅ Registrar Nuevo Producto'}
           onClose={() => {
             setShowForm(false);
             setEditingProduct(null);

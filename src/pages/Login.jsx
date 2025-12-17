@@ -50,7 +50,7 @@ export default function Login() {
     >
       <div
         style={{
-          backgroundColor: 'whitw',
+          backgroundColor: 'white',
           borderRadius: '16px',
           boxShadow: '0 8px 32px rgba(59, 46, 42, 0.06)',
           width: '100%',

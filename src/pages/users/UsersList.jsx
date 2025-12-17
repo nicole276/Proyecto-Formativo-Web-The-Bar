@@ -334,14 +334,7 @@ export default function UsersList() {
         onClose={() => setViewingUser(null)}
         width="700px"
       >
-        <div style={{ 
-          backgroundColor: '#f8f6f4', 
-          borderRadius: '12px', 
-          padding: '1rem 1.5rem',
-          border: '1px solid #e0d9d2',
-          maxHeight: '80vh',
-          overflowY: 'auto'
-        }}>
+        <div>
           {/* Avatar y Nombre en una sola línea */}
           <div style={{ 
             display: 'flex', 

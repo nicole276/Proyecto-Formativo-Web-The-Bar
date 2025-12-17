@@ -181,9 +181,10 @@ export default function SuppliersList() {
         <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '750px' }}>
           <thead>
             <tr style={{ backgroundColor: '#f8f6f4' }}>
+              {/* Columnas reordenadas según solicitud */}
+              <th style={{ padding: '1rem 1.2rem', textAlign: 'left', fontWeight: '700', color: '#3B2E2A', borderBottom: '2px solid #e0d9d2' }}>Tipo Documento</th>
+              <th style={{ padding: '1rem 1.2rem', textAlign: 'left', fontWeight: '700', color: '#3B2E2A', borderBottom: '2px solid #e0d9d2' }}>Documento</th>
               <th style={{ padding: '1rem 1.2rem', textAlign: 'left', fontWeight: '700', color: '#3B2E2A', borderBottom: '2px solid #e0d9d2' }}>Nombre / Razón Social</th>
-              <th style={{ padding: '1rem 1.2rem', textAlign: 'left', fontWeight: '700', color: '#3B2E2A', borderBottom: '2px solid #e0d9d2' }}>Tipo</th>
-              <th style={{ padding: '1rem 1.2rem', textAlign: 'left', fontWeight: '700', color: '#3B2E2A', borderBottom: '2px solid #e0d9d2' }}>ID</th>
               <th style={{ padding: '1rem 1.2rem', textAlign: 'left', fontWeight: '700', color: '#3B2E2A', borderBottom: '2px solid #e0d9d2' }}>Teléfono</th>
               <th style={{ padding: '1rem 1.2rem', textAlign: 'center', fontWeight: '700', color: '#3B2E2A', borderBottom: '2px solid #e0d9d2' }}>Estado</th>
               <th style={{ padding: '1rem 1.2rem', textAlign: 'center', fontWeight: '700', color: '#3B2E2A', borderBottom: '2px solid #e0d9d2' }}>Acciones</th>
@@ -196,20 +197,33 @@ export default function SuppliersList() {
                 bg: isActive ? 'rgba(244, 183, 63, 0.15)' : 'rgba(216, 102, 51, 0.15)',
                 color: isActive ? '#F4B73F' : '#D86633',
               };
+              
+              // Determinar tipo de documento basado en el tipo de persona
+              const tipoDocumento = supplier.tipo === 'Jurídica' ? 'NIT' : 'Cédula';
+              
               return (
                 <tr key={supplier.id} style={{ borderBottom: '1px solid #f0eee9' }}>
-                  <td style={{ padding: '1rem 1.2rem', color: '#3B2E2A', fontWeight: '600' }}>
-                    {supplier.nombre}
-                  </td>
+                  {/* Tipo de Documento */}
                   <td style={{ padding: '1rem 1.2rem', color: '#666', fontSize: '0.9rem' }}>
-                    {supplier.tipo === 'Jurídica' ? 'Jurídica' : 'Natural'}
+                    {tipoDocumento}
                   </td>
+                  
+                  {/* Documento */}
                   <td style={{ padding: '1rem 1.2rem', color: '#666', fontSize: '0.9rem' }}>
                     {supplier.identificacion}
                   </td>
+                  
+                  {/* Nombre / Razón Social */}
+                  <td style={{ padding: '1rem 1.2rem', color: '#3B2E2A', fontWeight: '600' }}>
+                    {supplier.nombre}
+                  </td>
+                  
+                  {/* Teléfono */}
                   <td style={{ padding: '1rem 1.2rem', color: '#666', fontSize: '0.9rem' }}>
                     {supplier.telefono || '—'}
                   </td>
+                  
+                  {/* Estado */}
                   <td style={{ padding: '1rem 1.2rem', textAlign: 'center' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
                       <span
@@ -220,7 +234,6 @@ export default function SuppliersList() {
                           color: statusStyle.color,
                           fontSize: '0.85rem',
                           fontWeight: '600',
-                          border: `1px solid ${statusStyle.color}`,
                         }}
                       >
                         {isActive ? '🟢 Activo' : '🔴 Inactivo'}
@@ -231,8 +244,16 @@ export default function SuppliersList() {
                       />
                     </div>
                   </td>
+                  
+                  {/* Acciones - ORGANIZADAS HORIZONTALMENTE */}
                   <td style={{ padding: '1rem 1.2rem', textAlign: 'center' }}>
-                    <div style={{ display: 'flex', gap: '0.6rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                    <div style={{ 
+                      display: 'flex', 
+                      gap: '0.6rem', 
+                      justifyContent: 'center', 
+                      flexWrap: 'nowrap',
+                      alignItems: 'center'
+                    }}>
                       <button
                         onClick={() => setViewingSupplier(supplier)}
                         style={{
@@ -240,7 +261,7 @@ export default function SuppliersList() {
                           backgroundColor: '#e8f4ff',
                           color: '#007bff',
                           border: 'none',
-                          borderRadius: '10px',
+                          borderRadius: '8px',
                           fontSize: '0.9rem',
                           fontWeight: '600',
                           cursor: 'pointer',
@@ -249,10 +270,20 @@ export default function SuppliersList() {
                           display: 'flex',
                           justifyContent: 'center',
                           alignItems: 'center',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#d0e7ff';
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = '#e8f4ff';
+                          e.currentTarget.style.transform = 'translateY(0)';
                         }}
                       >
                         👁️
                       </button>
+                      
                       {supplier.estado === 'activo' && (
                         <button
                           onClick={() => {
@@ -264,7 +295,7 @@ export default function SuppliersList() {
                             backgroundColor: '#fff3cd',
                             color: '#856404',
                             border: 'none',
-                            borderRadius: '10px',
+                            borderRadius: '8px',
                             fontSize: '0.9rem',
                             fontWeight: '600',
                             cursor: 'pointer',
@@ -273,25 +304,35 @@ export default function SuppliersList() {
                             display: 'flex',
                             justifyContent: 'center',
                             alignItems: 'center',
+                            transition: 'all 0.2s ease'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = '#ffeaa7';
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = '#fff3cd';
+                            e.currentTarget.style.transform = 'translateY(0)';
                           }}
                         >
                           ✏️
                         </button>
                       )}
+                      
                       <button
                         onClick={() => handleDelete(supplier)}
                         disabled={supplier.estado === 'activo'}
                         title={
                           supplier.estado === 'activo'
                             ? 'No se puede eliminar un proveedor activo. Cambie su estado a "Inactivo" primero.'
-                            : ''
+                            : 'Eliminar proveedor'
                         }
                         style={{
                           padding: '0.5rem',
                           backgroundColor: supplier.estado === 'activo' ? '#f5f5f5' : '#ffe8e8',
                           color: supplier.estado === 'activo' ? '#999' : '#e53e3e',
                           border: 'none',
-                          borderRadius: '10px',
+                          borderRadius: '8px',
                           fontSize: '0.9rem',
                           fontWeight: '600',
                           cursor: supplier.estado === 'activo' ? 'not-allowed' : 'pointer',
@@ -300,6 +341,19 @@ export default function SuppliersList() {
                           display: 'flex',
                           justifyContent: 'center',
                           alignItems: 'center',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          if (supplier.estado !== 'activo') {
+                            e.currentTarget.style.backgroundColor = '#fecaca';
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (supplier.estado !== 'activo') {
+                            e.currentTarget.style.backgroundColor = '#ffe8e8';
+                            e.currentTarget.style.transform = 'translateY(0)';
+                          }
                         }}
                       >
                         🗑️
@@ -338,14 +392,7 @@ export default function SuppliersList() {
           onClose={() => setViewingSupplier(null)}
           width="550px"
         >
-          <div style={{ 
-            backgroundColor: '#f8f6f4',
-            borderRadius: '12px',
-            padding: '1rem',
-            border: '1px solid #e0d9d2',
-            maxHeight: '80vh',
-            overflowY: 'auto'
-          }}>
+          <div>
             {/* Header con nombre y estado */}
             <div style={{ 
               display: 'flex', 
@@ -399,11 +446,7 @@ export default function SuppliersList() {
                     alignItems: 'center',
                     gap: '0.3rem'
                   }}>
-                    <span style={{ 
-                      color: '#F4B73F', 
-                      fontSize: '1.1rem'
-                    }}>🆔</span>
-                    <strong style={{ color: '#3B2E2A' }}>ID:</strong> {viewingSupplier.identificacion}
+                    <strong style={{ color: '#3B2E2A' }}>Documento:</strong> {viewingSupplier.identificacion}
                   </span>
                 </div>
               </div>
@@ -710,7 +753,7 @@ export default function SuppliersList() {
       {showForm && (
         <Modal
           isOpen={showForm}
-          title={editingSupplier ? '✏️ Editar Proveedor' : '✅ Registrar Proveedor'}
+          title={editingSupplier ? '✏️ Editar Proveedor' : '✅ Registrar Nuevo Proveedor'}
           onClose={() => {
             setShowForm(false);
             setEditingSupplier(null);

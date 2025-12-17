@@ -507,7 +507,7 @@ export default function CategoriesList() {
 {showForm && (
   <Modal
     isOpen={showForm}
-    title={editingCategory ? 'Editar Categoría' : 'Registrar Categoría'}
+    title={editingCategory ? '✏️ Editar Categoría' : '✅ Registrar Nueva Categoría'}
     onClose={() => {
       setShowForm(false);
       setEditingCategory(null);
