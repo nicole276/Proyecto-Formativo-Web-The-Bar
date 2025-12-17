@@ -148,8 +148,7 @@ export default function SalesList() {
           value={statusFilter}
           onChange={setStatusFilter}
           options={[
-            { value: 'todos', label: 'Todos' },
-            { value: 'pendiente', label: '⏳ Pendiente' },
+            { value: 'todos', label: 'Todos' },,
             { value: 'completada', label: '✅ Completada' },
             { value: 'anulada', label: '❌ Anulada' },
           ]}
@@ -410,12 +409,12 @@ export default function SalesList() {
                   border: viewingSale.estado === 'Completada' 
                     ? '1px solid #28a745' 
                     : viewingSale.estado === 'Pendiente'
-                    ? '1px solid #ffc107'
+                    ? '1px solid #bb861eff'
                     : '1px solid #dc3545',
                   color: viewingSale.estado === 'Completada' 
                     ? '#28a745' 
                     : viewingSale.estado === 'Pendiente'
-                    ? '#ffc107'
+                    ? '#bb861eff'
                     : '#dc3545',
                   fontWeight: '600',
                   fontSize: '0.85rem',

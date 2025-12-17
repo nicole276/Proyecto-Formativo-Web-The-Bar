@@ -150,7 +150,7 @@ function GeneralView({ data }) {
           }}
         >
           <h3 style={{ color: '#3B2E2A', marginBottom: '0.5rem' }}>Ventas</h3>
-          <p style={{ fontSize: '1.5rem', fontWeight: '700', color: '#F4B73F' }}>
+          <p style={{ fontSize: '1.5rem', fontWeight: '700', color: '#d4920eff' }}>
             ${data.general.reduce((sum, item) => sum + item.ventas, 0)}
           </p>
         </div>
@@ -272,7 +272,7 @@ function VentasView({ data }) {
         }}
       >
         <h3 style={{ color: '#3B2E2A', marginBottom: '0.5rem' }}>Total Ventas</h3>
-        <p style={{ fontSize: '1.5rem', fontWeight: '700', color: '#F4B73F' }}>
+        <p style={{ fontSize: '1.5rem', fontWeight: '700', color: '#d4920eff' }}>
           ${data.ventas.reduce((sum, item) => sum + item.valor, 0)}
         </p>
       </div>
@@ -692,7 +692,7 @@ export default function Dashboard() {
           onClick={() => setView('productos')}
           style={{
             padding: '0.5rem 1rem',
-            backgroundColor: view === 'productos' ? '#F4B73F' : '#0F1A24',
+            backgroundColor: view === 'productos' ? '#F4B73F' : '#D86633',
             color: view === 'productos' ? '#3B2E2A' : 'white',
             border: 'none',
             borderRadius: '20px',

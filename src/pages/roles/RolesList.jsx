@@ -282,7 +282,7 @@ export default function RolesList() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span style={{ fontSize: '1.4rem' }}>📄</span>
               <span style={{ color: '#3B2E2A', fontWeight: '700' }}>
-                Detalles del Rol: <span style={{ color: '#F4B73F' }}>{viewingRole.name}</span>
+                Detalles del Rol: <span style={{ color: '#db9b1bff' }}>{viewingRole.name}</span>
               </span>
             </div>
           }

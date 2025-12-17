@@ -5,6 +5,7 @@ import Alert from '../../components/ui/Alert';
 import ToggleSwitch from '../../components/ui/ToggleSwitch';
 import StatusDropdown from '../../components/ui/StatusDropdown';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import ConfirmDialog from '../../components/ui/ConfirmDialog'; // ✅ Asegúrate de tenerlo
 
 export default function ProductsList() {
   const [products, setProducts] = useState([
@@ -20,6 +21,10 @@ export default function ProductsList() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [viewingProduct, setViewingProduct] = useState(null);
   const [alert, setAlert] = useState(null);
+
+  // ✅ Estados para el modal de eliminar
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
 
   const handleSave = (data) => {
     try {
@@ -42,6 +47,7 @@ export default function ProductsList() {
     }
   };
 
+  // ✅ handleDelete: abre modal (no elimina directamente)
   const handleDelete = (product) => {
     if (product.estado === 'activo') {
       setAlert({
@@ -52,9 +58,22 @@ export default function ProductsList() {
       return;
     }
 
-    if (window.confirm(`¿Está seguro de eliminar "${product.nombre}"?`)) {
-      setProducts(prev => prev.filter(p => p.id !== product.id));
+    setProductToDelete(product);
+    setShowDeleteDialog(true);
+  };
+
+  // ✅ Confirmación de eliminación
+  const handleDeleteConfirm = () => {
+    if (productToDelete) {
+      setProducts(prev => prev.filter(p => p.id !== productToDelete.id));
+      setAlert({ 
+        type: 'success', 
+        message: `✅ Producto "${productToDelete.nombre}" eliminado` 
+      });
+      setTimeout(() => setAlert(null), 2500);
     }
+    setShowDeleteDialog(false);
+    setProductToDelete(null);
   };
 
   const toggleStatus = (id) => {
@@ -74,7 +93,7 @@ export default function ProductsList() {
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
-  // Conteos (sin cambios)
+  // Conteos
   const lowStockCount = products.filter(p => p.stock > 0 && p.stock <= 10).length;
   const outOfStockCount = products.filter(p => p.stock === 0).length;
 
@@ -317,7 +336,23 @@ export default function ProductsList() {
         </div>
       </div>
 
-      {/* Modal de detalle — sin íconos */}
+      {/* ✅ Modal de eliminar — ya integrado */}
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        title="¿Eliminar producto?"
+        message={`¿Está seguro de eliminar el producto "${productToDelete?.nombre}"? Esta acción no se puede deshacer.`}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => {
+          setShowDeleteDialog(false);
+          setProductToDelete(null);
+        }}
+        confirmText="✅ Sí, eliminar"
+        cancelText="❌ Cancelar"
+        confirmColor="#dc3545"
+        cancelColor="#6c757d"
+      />
+
+      {/* Modal de detalle */}
       {viewingProduct && (
         <Modal
           isOpen={!!viewingProduct}
@@ -326,9 +361,7 @@ export default function ProductsList() {
           width="600px"
         >
           <div style={{ padding: '0.5rem' }}>
-            {/* Encabezado principal */}
             <div>
-              {/* Nombre del producto con estado */}
               <div style={{ 
                 display: 'flex', 
                 alignItems: 'flex-start',
@@ -345,8 +378,6 @@ export default function ProductsList() {
                   }}>
                     {viewingProduct.nombre}
                   </h2>
-                  
-                  {/* Categoría */}
                   <div style={{ 
                     display: 'flex', 
                     alignItems: 'center',
@@ -362,77 +393,66 @@ export default function ProductsList() {
                     </span>
                   </div>
                 </div>
-                
-                {/* Estado del producto (checkbox rojo/verde) */}
                 <div style={{
-                padding: '0.5rem 1rem',
-                borderRadius: '20px',
-                backgroundColor: viewingProduct.status === 'activo' 
-                  ? 'rgba(40, 167, 69, 0.1)' 
-                  : 'rgba(220, 53, 69, 0.1)',
-                border: viewingProduct.status === 'activo' 
-                  ? '1px solid #28a745' 
-                  : '1px solid #dc3545',
-                color: viewingProduct.status === 'activo' ? '#28a745' : '#dc3545',
-                fontWeight: '600',
-                fontSize: '0.85rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                whiteSpace: 'nowrap',
-                flexShrink: 0
-              }}>
-                <span style={{ fontSize: '0.9rem' }}>
-                  {viewingProduct.status === 'activo' ? '✅' : '❌'}
-                </span>
-                <span>
-                  {viewingProduct.status === 'activo' ? 'Activo' : 'Inactivo'}
-                </span>
-              </div>
+                  padding: '0.5rem 1rem',
+                  borderRadius: '20px',
+                  backgroundColor: viewingProduct.estado === 'activo' 
+                    ? 'rgba(40, 167, 69, 0.1)' 
+                    : 'rgba(220, 53, 69, 0.1)',
+                  border: viewingProduct.estado === 'activo' 
+                    ? '1px solid #28a745' 
+                    : '1px solid #dc3545',
+                  color: viewingProduct.estado === 'activo' ? '#28a745' : '#dc3545',
+                  fontWeight: '600',
+                  fontSize: '0.85rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0
+                }}>
+                  <span style={{ fontSize: '0.9rem' }}>
+                    {viewingProduct.estado === 'activo' ? '✅' : '❌'}
+                  </span>
+                  <span>
+                    {viewingProduct.estado === 'activo' ? 'Activo' : 'Inactivo'}
+                  </span>
+                </div>
               </div>
             </div>
 
-            {/* Sección de Descripción */}
             <div style={{ marginBottom: '1.25rem' }}>
               <h3 style={{ 
                 fontSize: '1.125rem', 
                 fontWeight: '600', 
                 color: '#3B2E2A', 
-                margin: '0 0 0.5rem 0',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem'
+                margin: '0 0 0.5rem 0'
               }}>
-                <span style={{ fontSize: '1.1rem' }}>📝</span>
-                <span>Descripción</span>
+                📝 Descripción
               </h3>
               <div style={{
                 padding: '1rem',
                 backgroundColor: '#f8fafc',
                 borderRadius: '10px',
                 border: '2px solid #e2e8f0',
-                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)'
               }}>
                 <p style={{ 
                   margin: 0, 
                   color: '#475569', 
                   fontSize: '0.95rem',
                   lineHeight: '1.6',
-                  fontStyle: viewingProduct.descripcion ? 'normal' : 'italic'
                 }}>
                   {viewingProduct.descripcion || 'Dulces, chocolates, galletas y snacks colombianos e importados.'}
                 </p>
               </div>
             </div>
 
-            {/* Sección de Precios e Inventario en grid */}
             <div style={{ 
               display: 'grid', 
               gridTemplateColumns: '1fr 1fr', 
               gap: '1rem',
               marginBottom: '1.25rem'
             }}>
-              {/* Precios */}
               <div style={{ 
                 backgroundColor: '#fefce8',
                 borderRadius: '10px',
@@ -445,78 +465,29 @@ export default function ProductsList() {
                   gap: '0.5rem',
                   marginBottom: '0.75rem'
                 }}>
-                  <span style={{ 
-                    fontSize: '1.3rem',
-                    color: '#ca8a04'
-                  }}>💰</span>
-                  <h3 style={{ 
-                    fontSize: '1rem', 
-                    fontWeight: '700', 
-                    color: '#713f12',
-                    margin: 0
-                  }}>
+                  <span style={{ fontSize: '1.3rem', color: '#ca8a04' }}>💰</span>
+                  <h3 style={{ fontSize: '1rem', fontWeight: '700', color: '#713f12', margin: 0 }}>
                     Precios
                   </h3>
                 </div>
-                
                 <div style={{ display: 'grid', gap: '0.6rem' }}>
-                  <div style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    paddingBottom: '0.4rem',
-                    borderBottom: '1px solid #fde047'
-                  }}>
-                    <span style={{ 
-                      fontWeight: '600', 
-                      color: '#57534e',
-                      fontSize: '0.9rem'
-                    }}>Compra:</span>
-                    <span style={{ 
-                      fontWeight: 'bold', 
-                      color: '#854d0e',
-                      fontSize: '1.05rem'
-                    }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ fontWeight: '600', color: '#57534e' }}>Compra:</span>
+                    <span style={{ fontWeight: 'bold', color: '#854d0e' }}>
                       ${viewingProduct.precio_compra?.toLocaleString() || '0'}
                     </span>
                   </div>
-                  
-                  <div style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    paddingBottom: '0.4rem',
-                    borderBottom: '1px solid #fde047'
-                  }}>
-                    <span style={{ 
-                      fontWeight: '600', 
-                      color: '#57534e',
-                      fontSize: '0.9rem'
-                    }}>Venta:</span>
-                    <span style={{ 
-                      fontWeight: 'bold', 
-                      color: '#854d0e',
-                      fontSize: '1.05rem'
-                    }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ fontWeight: '600', color: '#57534e' }}>Venta:</span>
+                    <span style={{ fontWeight: 'bold', color: '#854d0e' }}>
                       ${viewingProduct.precio_venta?.toLocaleString() || '0'}
                     </span>
                   </div>
-                  
-                  <div style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    paddingTop: '0.4rem'
-                  }}>
-                    <span style={{ 
-                      fontWeight: '600', 
-                      color: '#57534e',
-                      fontSize: '0.9rem'
-                    }}>Margen:</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ fontWeight: '600', color: '#57534e' }}>Margen:</span>
                     <span style={{ 
                       fontWeight: 'bold', 
                       color: '#16a34a',
-                      fontSize: '1.05rem',
                       backgroundColor: '#f0fdf4',
                       padding: '0.2rem 0.5rem',
                       borderRadius: '4px',
@@ -530,7 +501,6 @@ export default function ProductsList() {
                 </div>
               </div>
 
-              {/* Inventario */}
               <div style={{ 
                 backgroundColor: '#f0f9ff',
                 borderRadius: '10px',
@@ -543,20 +513,11 @@ export default function ProductsList() {
                   gap: '0.5rem',
                   marginBottom: '0.75rem'
                 }}>
-                  <span style={{ 
-                    fontSize: '1.3rem',
-                    color: '#0369a1'
-                  }}>📦</span>
-                  <h3 style={{ 
-                    fontSize: '1rem', 
-                    fontWeight: '700', 
-                    color: '#0c4a6e',
-                    margin: 0
-                  }}>
+                  <span style={{ fontSize: '1.3rem', color: '#0369a1' }}>📦</span>
+                  <h3 style={{ fontSize: '1rem', fontWeight: '700', color: '#0c4a6e', margin: 0 }}>
                     Inventario
                   </h3>
                 </div>
-                
                 <div style={{ 
                   display: 'flex', 
                   flexDirection: 'column',
@@ -568,8 +529,7 @@ export default function ProductsList() {
                     fontSize: '2.2rem', 
                     fontWeight: '800', 
                     color: '#1e40af',
-                    marginBottom: '0.25rem',
-                    textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
+                    marginBottom: '0.25rem'
                   }}>
                     {viewingProduct.stock || 0}
                   </div>
@@ -580,8 +540,7 @@ export default function ProductsList() {
                     backgroundColor: '#fff',
                     padding: '0.3rem 1rem',
                     borderRadius: '20px',
-                    border: '1px solid #cbd5e1',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                    border: '1px solid #cbd5e1'
                   }}>
                     unidades disponibles
                   </div>
@@ -589,7 +548,6 @@ export default function ProductsList() {
               </div>
             </div>
 
-            {/* Línea divisoria */}
             <div style={{ 
               height: '1px', 
               backgroundColor: '#e5e7eb', 
@@ -597,11 +555,7 @@ export default function ProductsList() {
               width: '100%'
             }}></div>
             
-            {/* Botón de Cerrar */}
-            <div style={{ 
-              textAlign: 'center',
-              paddingTop: '0.5rem'
-            }}>
+            <div style={{ textAlign: 'center', paddingTop: '0.5rem' }}>
               <button
                 onClick={() => setViewingProduct(null)}
                 style={{
@@ -613,22 +567,9 @@ export default function ProductsList() {
                   fontSize: '1rem',
                   fontWeight: '600',
                   cursor: 'pointer',
-                  transition: 'all 0.2s ease',
                   boxShadow: '0 3px 6px rgba(59, 46, 42, 0.2)',
                   width: '100%',
-                  maxWidth: '180px',
-                  position: 'relative',
-                  overflow: 'hidden'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#2d241f';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 6px 12px rgba(59, 46, 42, 0.25)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#3B2E2A';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 3px 6px rgba(59, 46, 42, 0.2)';
+                  maxWidth: '180px'
                 }}
               >
                 Cerrar

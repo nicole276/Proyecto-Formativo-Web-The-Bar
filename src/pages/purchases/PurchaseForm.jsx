@@ -356,7 +356,7 @@ export default function PurchaseForm({ purchase = null, suppliers, products, onS
             
             <div style={{ 
               padding: '0.2rem 0.6rem', 
-              backgroundColor: '#F4B73F', 
+              backgroundColor: '#db9b1bff', 
               borderRadius: '12px',
               fontWeight: '600',
               fontSize: '0.8rem',
@@ -530,7 +530,7 @@ export default function PurchaseForm({ purchase = null, suppliers, products, onS
                   color: '#3B2E2A',
                   fontWeight: '500',
                 }}>
-                  Total: <span style={{ fontWeight: '700', color: '#F4B73F' }}>{formatCOP(total)}</span>
+                  Total: <span style={{ fontWeight: '700', color: '#9c6b07ff' }}>{formatCOP(total)}</span>
                 </div>
               </div>
 
@@ -720,9 +720,9 @@ export default function PurchaseForm({ purchase = null, suppliers, products, onS
             fontWeight: '700',
             fontSize: '1rem',
             color: '#3B2E2A',
-            border: '2px solid #F4B73F',
+            border: '2px solid #9c6b07ff',
           }}>
-            Total: <span style={{ color: '#F4B73F' }}>{formatCOP(total)}</span>
+            Total: <span style={{ color: '#9c6b07ff' }}>{formatCOP(total)}</span>
           </div>
 
           <div style={{ display: 'flex', gap: '0.6rem' }}>
