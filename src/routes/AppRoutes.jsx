@@ -12,14 +12,12 @@ import PurchasesPage from '../pages/purchases/PurchasesPage';
 import SalesPage from '../pages/sales/SalesPage';
 import Layout from '../components/Layout/Layout';
 import HomePage from '../pages/landing/HomePage';
-import LandingProductsPage from '../pages/landing/ProductsPage';
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/productospage" element={<LandingProductsPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
 

@@ -27,24 +27,34 @@ export default function SalesList() {
       fecha: '2025-12-13',
       clienteId: 1,
       clienteNombre: 'Carlos Mendoza',
-      factura: 'VEN-001',
       productos: [
         { productoId: 1, nombre: 'Ron Medellín', cantidad: 2, precio: 55000, descuento: 0, subtotal: 110000 },
       ],
       total: 110000,
-      estado: 'Finalizada',
+      estado: 'Completada',
     },
     {
       id: 2,
       fecha: '2025-12-14',
       clienteId: 2,
       clienteNombre: 'Ana López',
-      factura: 'VEN-002',
       productos: [
         { productoId: 2, nombre: 'Cerveza Águila', cantidad: 1, precio: 5000, descuento: 0, subtotal: 5000 },
       ],
       total: 5000,
-      estado: 'Pendiente',
+      estado: 'Completada',
+    },
+    {
+      id: 3,
+      fecha: '2025-12-15',
+      clienteId: 1,
+      clienteNombre: 'Carlos Mendoza',
+      productos: [
+        { productoId: 1, nombre: 'Ron Medellín', cantidad: 1, precio: 55000, descuento: 10, subtotal: 49500 },
+        { productoId: 2, nombre: 'Cerveza Águila', cantidad: 2, precio: 5000, descuento: 5, subtotal: 9500 },
+      ],
+      total: 59000,
+      estado: 'Completada',
     },
   ]);
   const [search, setSearch] = useState('');
@@ -80,7 +90,7 @@ export default function SalesList() {
       setSales(sales.map(s =>
         s.id === saleToAnular.id ? { ...s, estado: 'Anulada' } : s
       ));
-      setAlert({ type: 'success', message: `Venta "${saleToAnular.factura}" anulada` });
+      setAlert({ type: 'success', message: `Venta anulada correctamente` });
       setTimeout(() => setAlert(null), 2000);
     }
     setShowAnularDialog(false);
@@ -88,45 +98,24 @@ export default function SalesList() {
   };
 
   const handleAnular = (sale) => {
-    if (sale.estado !== 'Pendiente') return;
+    if (sale.estado !== 'Pendiente' && sale.estado !== 'Completada') return;
     setSaleToAnular(sale);
     setShowAnularDialog(true);
   };
 
-  const handleProductChange = (index, field, value) => {
-  const nuevosProductos = [...formData.productos];
-  
-    if (field === 'productoId') {
-      // ✅ productoId como string
-      const prod = products.find(p => String(p.id) === value);
-      nuevosProductos[index] = { 
-        ...nuevosProductos[index], 
-        productoId: value,
-        nombre: prod?.nombre || '',
-        stock: prod?.stock || 0,
-      };
-    } 
-    else if (field === 'cantidad' || field === 'precio' || field === 'descuento') {
-      // ✅ Conversión segura a número (o string vacío)
-      const numValue = value === '' ? '' : Number(value);
-      nuevosProductos[index] = { 
-        ...nuevosProductos[index], 
-        [field]: numValue,
-      };
-    } 
-    else {
-      nuevosProductos[index] = { ...nuevosProductos[index], [field]: value };
-    }
-
-    setFormData({ ...formData, productos: nuevosProductos });
+  const handleChangeStatus = (saleId, newStatus) => {
+    setSales(sales.map(s =>
+      s.id === saleId ? { ...s, estado: newStatus } : s
+    ));
+    setAlert({ type: 'success', message: `Estado actualizado a ${newStatus}` });
+    setTimeout(() => setAlert(null), 2000);
   };
 
   const filteredSales = sales.filter(s => {
-    const matchesSearch = s.factura.toLowerCase().includes(search.toLowerCase()) ||
-                          s.clienteNombre.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = s.clienteNombre.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = statusFilter === 'todos' ||
       (statusFilter === 'pendiente' && s.estado === 'Pendiente') ||
-      (statusFilter === 'finalizada' && s.estado === 'Finalizada') ||
+      (statusFilter === 'completada' && s.estado === 'Completada') ||
       (statusFilter === 'anulada' && s.estado === 'Anulada');
     return matchesSearch && matchesStatus;
   });
@@ -141,7 +130,7 @@ export default function SalesList() {
         <div style={{ flex: '1', minWidth: '250px' }}>
           <input
             type="text"
-            placeholder="🔍 Buscar por factura o cliente..."
+            placeholder="🔍 Buscar por cliente..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             style={{
@@ -161,7 +150,7 @@ export default function SalesList() {
           options={[
             { value: 'todos', label: 'Todos' },
             { value: 'pendiente', label: '⏳ Pendiente' },
-            { value: 'finalizada', label: '✅ Finalizada' },
+            { value: 'completada', label: '✅ Completada' },
             { value: 'anulada', label: '❌ Anulada' },
           ]}
         />
@@ -193,12 +182,11 @@ export default function SalesList() {
 
       <div style={{ backgroundColor: 'white', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 6px 20px rgba(0,0,0,0.06)', border: '1px solid #eee' }}>
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '900px' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '700px' }}>
             <thead>
               <tr style={{ backgroundColor: '#f8f6f4' }}>
                 <th style={{ padding: '1rem 1.2rem', textAlign: 'left', fontWeight: '700', color: '#3B2E2A', borderBottom: '2px solid #e0d9d2' }}>Fecha</th>
                 <th style={{ padding: '1rem 1.2rem', textAlign: 'left', fontWeight: '700', color: '#3B2E2A', borderBottom: '2px solid #e0d9d2' }}>Cliente</th>
-                <th style={{ padding: '1rem 1.2rem', textAlign: 'left', fontWeight: '700', color: '#3B2E2A', borderBottom: '2px solid #e0d9d2' }}>Factura</th>
                 <th style={{ padding: '1rem 1.2rem', textAlign: 'right', fontWeight: '700', color: '#3B2E2A', borderBottom: '2px solid #e0d9d2' }}>Total</th>
                 <th style={{ padding: '1rem 1.2rem', textAlign: 'center', fontWeight: '700', color: '#3B2E2A', borderBottom: '2px solid #e0d9d2' }}>Estado</th>
                 <th style={{ padding: '1rem 1.2rem', textAlign: 'center', fontWeight: '700', color: '#3B2E2A', borderBottom: '2px solid #e0d9d2' }}>Acciones</th>
@@ -213,9 +201,6 @@ export default function SalesList() {
                   <td style={{ padding: '1rem 1.2rem', color: '#3B2E2A', fontWeight: '600' }}>
                     {sale.clienteNombre}
                   </td>
-                  <td style={{ padding: '1rem 1.2rem', color: '#666', fontWeight: '600' }}>
-                    {sale.factura}
-                  </td>
                   <td style={{ padding: '1rem 1.2rem', textAlign: 'right', color: '#3B2E2A', fontWeight: '700' }}>
                     ${sale.total.toLocaleString()}
                   </td>
@@ -225,17 +210,17 @@ export default function SalesList() {
                         <StatusDropdown
                           value="pendiente"
                           onChange={(newStatus) => {
-                            if (newStatus === 'finalizada') {
-                              handleChangeStatus(sale.id, 'Finalizada');
+                            if (newStatus === 'completada') {
+                              handleChangeStatus(sale.id, 'Completada');
                             }
                           }}
                           options={[
-                            { value: 'finalizada', label: '✅ Finalizada' },
+                            { value: 'completada', label: '✅ Completada' },
                           ]}
-                          placeholder="Pendiente"
+                          placeholder="⏳ Pendiente"
                         />
                       </div>
-                    ) : sale.estado === 'Finalizada' ? (
+                    ) : sale.estado === 'Completada' ? (
                       <span
                         style={{
                           padding: '0.3rem 0.8rem',
@@ -247,9 +232,9 @@ export default function SalesList() {
                           border: '1px solid #28a745',
                         }}
                       >
-                        ✅ Finalizada
+                        ✅ Completada
                       </span>
-                    ) : (
+                    ) : sale.estado === 'Anulada' ? (
                       <span
                         style={{
                           padding: '0.3rem 0.8rem',
@@ -262,6 +247,20 @@ export default function SalesList() {
                         }}
                       >
                         ❌ Anulada
+                      </span>
+                    ) : (
+                      <span
+                        style={{
+                          padding: '0.3rem 0.8rem',
+                          borderRadius: '20px',
+                          backgroundColor: 'rgba(108, 117, 125, 0.15)',
+                          color: '#6c757d',
+                          fontSize: '0.85rem',
+                          fontWeight: '600',
+                          border: '1px solid #6c757d',
+                        }}
+                      >
+                        {sale.estado}
                       </span>
                     )}
                   </td>
@@ -277,9 +276,13 @@ export default function SalesList() {
                           borderRadius: '10px',
                           fontSize: '0.9rem',
                           fontWeight: '600',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
                         }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#d0e7ff'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#e8f4ff'}
                       >
-                        👁️ 
+                        👁️
                       </button>
                       {sale.estado === 'Pendiente' && (
                         <button
@@ -295,31 +298,38 @@ export default function SalesList() {
                             borderRadius: '10px',
                             fontSize: '0.9rem',
                             fontWeight: '600',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
                           }}
+                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#ffeaa7'}
+                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#fff3cd'}
                         >
-                          ✏️ 
+                          ✏️
                         </button>
                       )}
-                      <button
-                        onClick={() => handleAnular(sale)}
-                        disabled={sale.estado !== 'Pendiente'}
-                        style={{
-                          padding: '0.5rem 1rem',
-                          backgroundColor: sale.estado === 'Pendiente' ? 'rgba(220, 53, 69, 0.1)' : '#f5f5f5',
-                          color: sale.estado === 'Pendiente' ? '#dc3545' : '#999',
-                          border: 'none',
-                          borderRadius: '10px',
-                          fontSize: '0.9rem',
-                          fontWeight: '600',
-                          cursor: sale.estado === 'Pendiente' ? 'pointer' : 'not-allowed',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.3rem',
-                        }}
-                      >
-                        <BlockRoundedIcon sx={{ fontSize: '1.1rem', color: '#dc3545' }} />
-                        
-                      </button>
+                      {(sale.estado === 'Pendiente' || sale.estado === 'Completada') && (
+                        <button
+                          onClick={() => handleAnular(sale)}
+                          style={{
+                            padding: '0.5rem 1rem',
+                            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                            color: '#dc3545',
+                            border: 'none',
+                            borderRadius: '10px',
+                            fontSize: '0.9rem',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.3rem',
+                            transition: 'all 0.2s',
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(220, 53, 69, 0.2)'}
+                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(220, 53, 69, 0.1)'}
+                        >
+                          <BlockRoundedIcon sx={{ fontSize: '1.1rem' }} />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -333,7 +343,7 @@ export default function SalesList() {
       <ConfirmDialog
         isOpen={showAnularDialog}
         title="¿Anular Venta?"
-        message={`¿Está seguro de anular la venta "${saleToAnular?.factura}"? Esta acción no se puede deshacer.`}
+        message={`¿Está seguro de anular esta venta? Esta acción no se puede deshacer.`}
         onConfirm={handleAnularConfirm}
         onCancel={() => {
           setShowAnularDialog(false);
@@ -349,10 +359,310 @@ export default function SalesList() {
       {viewingSale && (
         <Modal
           isOpen={!!viewingSale}
-          title={`📄 Detalle de Venta: ${viewingSale.factura}`}
+          title="📄 Detalles de la Venta"
           onClose={() => setViewingSale(null)}
+          width="600px"
         >
-          <SaleDetail sale={viewingSale} />
+          <div style={{ padding: '0.5rem' }}>
+            {/* Encabezado principal */}
+            <div style={{ marginBottom: '1rem' }}>
+              <h1 style={{ 
+                fontSize: '1.5rem', 
+                fontWeight: 'bold', 
+                color: '#000', 
+                margin: '0 0 0.5rem 0',
+                borderBottom: '2px solid #e5e7eb',
+                paddingBottom: '0.5rem'
+              }}>
+                Detalles de la Venta
+              </h1>
+              
+              {/* Factura y estado */}
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'flex-start',
+                justifyContent: 'space-between',
+                marginBottom: '0.5rem',
+                padding: '0.3rem 0'
+              }}>
+                <div style={{ flex: 1 }}>
+                  {/* Cliente y fecha */}
+                  <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center',
+                    gap: '1rem',
+                    marginTop: '0.2rem'
+                  }}>
+                    <span style={{ 
+                      fontSize: '0.85rem', 
+                      color: '#666',
+                      fontWeight: '500'
+                    }}>
+                      <strong style={{ color: '#3B2E2A' }}>Cliente:</strong> {viewingSale.clienteNombre || viewingSale.cliente}
+                    </span>
+                    <span style={{ 
+                      fontSize: '0.85rem', 
+                      color: '#666',
+                      fontWeight: '500'
+                    }}>
+                      <strong style={{ color: '#3B2E2A' }}>Fecha:</strong> {new Date(viewingSale.fecha).toLocaleDateString('es-CO')}
+                    </span>
+                  </div>
+                </div>
+                
+                {/* Estado de la venta */}
+                <div style={{
+                  padding: '0.5rem 1rem',
+                  borderRadius: '20px',
+                  backgroundColor: viewingSale.estado === 'Completada' 
+                    ? 'rgba(40, 167, 69, 0.1)' 
+                    : viewingSale.estado === 'Pendiente'
+                    ? 'rgba(255, 193, 7, 0.1)'
+                    : 'rgba(220, 53, 69, 0.1)',
+                  border: viewingSale.estado === 'Completada' 
+                    ? '1px solid #28a745' 
+                    : viewingSale.estado === 'Pendiente'
+                    ? '1px solid #ffc107'
+                    : '1px solid #dc3545',
+                  color: viewingSale.estado === 'Completada' 
+                    ? '#28a745' 
+                    : viewingSale.estado === 'Pendiente'
+                    ? '#ffc107'
+                    : '#dc3545',
+                  fontWeight: '600',
+                  fontSize: '0.85rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0
+                }}>
+                  <span style={{ fontSize: '0.9rem' }}>
+                    {viewingSale.estado === 'Completada' ? '✅' : 
+                    viewingSale.estado === 'Pendiente' ? '⏳' : '❌'}
+                  </span>
+                  <span>
+                    {viewingSale.estado === 'Completada' ? 'Completada' : 
+                    viewingSale.estado === 'Pendiente' ? 'Pendiente' : 'Anulada'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Sección de Productos */}
+            <div style={{ marginBottom: '1rem' }}>
+              <h3 style={{ 
+                fontSize: '1rem', 
+                fontWeight: '600', 
+                color: '#3B2E2A', 
+                margin: '0 0 0.5rem 0',
+                paddingLeft: '0.25rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem'
+              }}>
+                <span>📦</span>
+                <span>Productos ({viewingSale.productos?.length || 0})</span>
+              </h3>
+              <div style={{
+                padding: '0.9rem',
+                backgroundColor: '#f8fafc',
+                borderRadius: '8px',
+                border: '2px solid #e2e8f0',
+                boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.05)'
+              }}>
+                <div style={{ 
+                  overflowX: 'auto',
+                  maxHeight: '250px',
+                  overflowY: 'auto'
+                }}>
+                  <table style={{ 
+                    width: '100%', 
+                    borderCollapse: 'collapse',
+                    minWidth: '400px'
+                  }}>
+                    <thead>
+                      <tr style={{ backgroundColor: '#f1f5f9' }}>
+                        <th style={{ 
+                          padding: '0.6rem', 
+                          textAlign: 'left', 
+                          fontWeight: '600', 
+                          color: '#3B2E2A', 
+                          borderBottom: '2px solid #cbd5e1',
+                          fontSize: '0.85rem'
+                        }}>Producto</th>
+                        <th style={{ 
+                          padding: '0.6rem', 
+                          textAlign: 'center', 
+                          fontWeight: '600', 
+                          color: '#3B2E2A', 
+                          borderBottom: '2px solid #cbd5e1',
+                          fontSize: '0.85rem'
+                        }}>Cantidad</th>
+                        <th style={{ 
+                          padding: '0.6rem', 
+                          textAlign: 'right', 
+                          fontWeight: '600', 
+                          color: '#3B2E2A', 
+                          borderBottom: '2px solid #cbd5e1',
+                          fontSize: '0.85rem'
+                        }}>Precio</th>
+                        <th style={{ 
+                          padding: '0.6rem', 
+                          textAlign: 'right', 
+                          fontWeight: '600', 
+                          color: '#3B2E2A', 
+                          borderBottom: '2px solid #cbd5e1',
+                          fontSize: '0.85rem'
+                        }}>Subtotal</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {viewingSale.productos?.map((producto, index) => (
+                        <tr key={index} style={{ 
+                          borderBottom: '1px solid #e2e8f0',
+                          backgroundColor: index % 2 === 0 ? '#fff' : '#f8fafc'
+                        }}>
+                          <td style={{ 
+                            padding: '0.6rem', 
+                            color: '#3B2E2A', 
+                            fontWeight: '600',
+                            fontSize: '0.85rem'
+                          }}>
+                            {producto.nombre}
+                          </td>
+                          <td style={{ 
+                            padding: '0.6rem', 
+                            textAlign: 'center', 
+                            color: '#666',
+                            fontWeight: '600',
+                            fontSize: '0.85rem'
+                          }}>
+                            {producto.cantidad}
+                          </td>
+                          <td style={{ 
+                            padding: '0.6rem', 
+                            textAlign: 'right', 
+                            color: '#666',
+                            fontWeight: '600',
+                            fontSize: '0.85rem'
+                          }}>
+                            ${producto.precio?.toLocaleString() || '0'}
+                          </td>
+                          <td style={{ 
+                            padding: '0.6rem', 
+                            textAlign: 'right', 
+                            color: '#3B2E2A',
+                            fontWeight: '700',
+                            fontSize: '0.85rem'
+                          }}>
+                            ${producto.subtotal?.toLocaleString() || '0'}
+                          </td>
+                        </tr>
+                      )) || (
+                        <tr>
+                          <td colSpan="4" style={{ 
+                            padding: '1rem', 
+                            textAlign: 'center', 
+                            color: '#666',
+                            fontStyle: 'italic'
+                          }}>
+                            No hay productos en esta venta
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            {/* Línea divisoria */}
+            <div style={{ 
+              height: '1px', 
+              backgroundColor: '#e5e7eb', 
+              margin: '0.8rem 0',
+              width: '100%'
+            }}></div>
+
+            {/* Total de la venta */}
+            <div style={{ 
+              marginBottom: '1.2rem'
+            }}>
+              <div style={{
+                padding: '0.9rem',
+                backgroundColor: '#f0f9ff',
+                borderRadius: '8px',
+                border: '2px solid #7dd3fc'
+              }}>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center'
+                }}>
+                  <span style={{ 
+                    fontWeight: '700', 
+                    color: '#0369a1',
+                    fontSize: '1rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                  }}>
+                    <span>💰</span>
+                    <span>TOTAL DE LA VENTA</span>
+                  </span>
+                  <span style={{ 
+                    fontWeight: '800', 
+                    fontSize: '1.5rem', 
+                    color: '#0369a1',
+                    backgroundColor: '#fff',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '6px',
+                    border: '2px solid #38bdf8',
+                    boxShadow: '0 2px 4px rgba(3, 105, 161, 0.1)'
+                  }}>
+                    ${viewingSale.total?.toLocaleString() || '0'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Botón de Cerrar */}
+            <div style={{ 
+              textAlign: 'center',
+              paddingTop: '0.5rem'
+            }}>
+              <button
+                onClick={() => setViewingSale(null)}
+                style={{
+                  padding: '0.6rem 2rem',
+                  backgroundColor: '#3B2E2A',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '0.95rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 2px 4px rgba(59, 46, 42, 0.2)',
+                  width: '100%',
+                  maxWidth: '150px'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#2d241f';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                  e.currentTarget.style.boxShadow = '0 3px 6px rgba(59, 46, 42, 0.25)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#3B2E2A';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 2px 4px rgba(59, 46, 42, 0.2)';
+                }}
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
         </Modal>
       )}
 

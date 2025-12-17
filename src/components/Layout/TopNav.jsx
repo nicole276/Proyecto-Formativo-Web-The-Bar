@@ -49,36 +49,6 @@ export default function TopNav() {
       {/* Enlaces a la derecha */}
       <div style={{ display: 'flex', gap: '1.5rem' }}>
         <button
-          onClick={() => navigate('/')}
-          style={{
-            color: 'white',
-            background: 'none',
-            border: 'none',
-            fontSize: '0.9rem',
-            fontWeight: '600',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.3rem',
-          }}
-        >
-          Inicio
-        </button>
-        <button
-          onClick={() => navigate('/productospage')}
-          style={{
-            color: 'white',
-            background: 'none',
-            border: 'none',
-            fontSize: '0.9rem',
-            fontWeight: '600',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.3rem',
-          }}
-        >
-          Productos
-        </button>
-        <button
           onClick={() => navigate('/login')}
           style={{
             color: '#F4B73F',

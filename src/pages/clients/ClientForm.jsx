@@ -18,6 +18,7 @@ export default function ClientForm({ client = null, onSave, onCancel }) {
 
   const tiposDocumento = [
     'Cédula',
+    'Cédula de Extranjería',
     'Pasaporte',
   ];
 
@@ -66,14 +67,7 @@ export default function ClientForm({ client = null, onSave, onCancel }) {
       <form onSubmit={handleSubmit} style={{ marginTop: '1rem' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.8rem' }}>
           <div>
-            <FormField
-              label="Nombre Completo *"
-              name="nombre"
-              value={formData.nombre}
-              onChange={handleChange}
-              error={errors.nombre}
-            />
-
+            {/* 1. Tipo de Documento */}
             <div style={{ marginBottom: '1.5rem' }}>
               <label
                 style={{
@@ -111,6 +105,7 @@ export default function ClientForm({ client = null, onSave, onCancel }) {
               )}
             </div>
 
+            {/* 2. Número de Documento */}
             <FormField
               label="Número de Documento *"
               name="documento"
@@ -118,9 +113,19 @@ export default function ClientForm({ client = null, onSave, onCancel }) {
               onChange={handleChange}
               error={errors.documento}
             />
+
+            {/* 3. Nombre Completo */}
+            <FormField
+              label="Nombre Completo *"
+              name="nombre"
+              value={formData.nombre}
+              onChange={handleChange}
+              error={errors.nombre}
+            />
           </div>
 
           <div>
+            {/* 4. Teléfono */}
             <FormField
               label="Teléfono"
               name="telefono"
@@ -129,6 +134,7 @@ export default function ClientForm({ client = null, onSave, onCancel }) {
               error={errors.telefono}
             />
 
+            {/* 5. Email */}
             <FormField
               label="Email"
               name="email"
@@ -137,6 +143,7 @@ export default function ClientForm({ client = null, onSave, onCancel }) {
               error={errors.email}
             />
 
+            {/* 6. Dirección */}
             <FormField
               label="Dirección"
               name="direccion"
@@ -161,7 +168,7 @@ export default function ClientForm({ client = null, onSave, onCancel }) {
               boxShadow: '0 4px 12px rgba(244, 183, 63, 0.25)',
             }}
           >
-            ✅ {client ? 'Actualizar' : 'Registrar'}
+            {client ? 'Actualizar' : 'Registrar'}
           </button>
           <button
             type="button"
@@ -177,7 +184,7 @@ export default function ClientForm({ client = null, onSave, onCancel }) {
               cursor: 'pointer',
             }}
           >
-            ❌ Cancelar
+            Cancelar
           </button>
         </div>
       </form>

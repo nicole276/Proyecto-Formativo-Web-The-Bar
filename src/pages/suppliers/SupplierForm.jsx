@@ -7,6 +7,7 @@ export default function SupplierForm({ supplier = null, onSave, onCancel }) {
   const [formData, setFormData] = useState({
     nombre: supplier?.nombre || '',
     tipo: supplier?.tipo || 'Natural',
+    tipo_documento: supplier?.tipo_documento || 'Cédula',
     identificacion: supplier?.identificacion || '',
     nit: supplier?.nit || '',
     telefono: supplier?.telefono || '',
@@ -27,6 +28,7 @@ export default function SupplierForm({ supplier = null, onSave, onCancel }) {
     const newErrors = {};
     if (!formData.nombre.trim()) newErrors.nombre = 'El nombre o razón social es obligatorio';
     if (!formData.tipo) newErrors.tipo = 'El tipo de persona es obligatorio';
+    if (!formData.tipo_documento) newErrors.tipo_documento = 'El tipo de documento es obligatorio';
     if (!formData.identificacion.trim()) newErrors.identificacion = 'La identificación es obligatoria';
     if (formData.tipo === 'Jurídica' && !formData.nit.trim()) {
       newErrors.nit = 'El NIT es obligatorio para personas jurídicas';
@@ -65,6 +67,7 @@ export default function SupplierForm({ supplier = null, onSave, onCancel }) {
       <form onSubmit={handleSubmit} style={{ marginTop: '1rem' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.8rem' }}>
           <div>
+            {/* 1. Tipo de Persona */}
             <div style={{ marginBottom: '1.5rem' }}>
               <label
                 style={{
@@ -111,6 +114,54 @@ export default function SupplierForm({ supplier = null, onSave, onCancel }) {
               )}
             </div>
 
+            {/* 2. Tipo de Documento */}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label
+                style={{
+                  display: 'block',
+                  color: '#3B2E2A',
+                  fontSize: '0.9rem',
+                  fontWeight: '600',
+                  marginBottom: '0.5rem',
+                }}
+              >
+                Tipo de Documento *
+              </label>
+              <select
+                name="tipo_documento"
+                value={formData.tipo_documento}
+                onChange={handleChange}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 1rem',
+                  borderRadius: '8px',
+                  border: errors.tipo_documento ? '1px solid #e53e3e' : '1px solid #e0d9d2',
+                  backgroundColor: 'white',
+                  color: '#3B2E2A',
+                  fontSize: '1rem',
+                }}
+              >
+                <option value="Cédula">Cédula</option>
+                <option value="Cédula de Extranjería">Cédula de Extranjería</option>
+                <option value="Pasaporte">Pasaporte</option>
+              </select>
+              {errors.tipo_documento && (
+                <p style={{ color: '#e53e3e', fontSize: '0.85rem', marginTop: '0.5rem' }}>
+                  {errors.tipo_documento}
+                </p>
+              )}
+            </div>
+
+            {/* 3. Documento (identificación) */}
+            <FormField
+              label="Documento *"
+              name="identificacion"
+              value={formData.identificacion}
+              onChange={handleChange}
+              error={errors.identificacion}
+            />
+
+            {/* 4. Nombre / Razón Social */}
             <FormField
               label={`${formData.tipo === 'Jurídica' ? 'Razón Social' : 'Nombre Completo'} *`}
               name="nombre"
@@ -118,15 +169,10 @@ export default function SupplierForm({ supplier = null, onSave, onCancel }) {
               onChange={handleChange}
               error={errors.nombre}
             />
+          </div>
 
-            <FormField
-              label="Identificación *"
-              name="identificacion"
-              value={formData.identificacion}
-              onChange={handleChange}
-              error={errors.identificacion}
-            />
-
+          <div>
+            {/* 8. NIT (solo para Jurídica) — colocado aquí para mantener flujo visual limpio */}
             {formData.tipo === 'Jurídica' && (
               <FormField
                 label="NIT *"
@@ -136,9 +182,8 @@ export default function SupplierForm({ supplier = null, onSave, onCancel }) {
                 error={errors.nit}
               />
             )}
-          </div>
 
-          <div>
+            {/* 5. Teléfono */}
             <FormField
               label="Teléfono *"
               name="telefono"
@@ -147,6 +192,7 @@ export default function SupplierForm({ supplier = null, onSave, onCancel }) {
               error={errors.telefono}
             />
 
+            {/* 6. Email */}
             <FormField
               label="Email"
               name="email"
@@ -155,6 +201,7 @@ export default function SupplierForm({ supplier = null, onSave, onCancel }) {
               error={errors.email}
             />
 
+            {/* 7. Dirección */}
             <FormField
               label="Dirección"
               name="direccion"
@@ -179,7 +226,7 @@ export default function SupplierForm({ supplier = null, onSave, onCancel }) {
               boxShadow: '0 4px 12px rgba(244, 183, 63, 0.25)',
             }}
           >
-            ✅ {supplier ? 'Actualizar' : 'Registrar'}
+            {supplier ? 'Actualizar' : 'Registrar'}
           </button>
           <button
             type="button"
@@ -195,7 +242,7 @@ export default function SupplierForm({ supplier = null, onSave, onCancel }) {
               cursor: 'pointer',
             }}
           >
-            ❌ Cancelar
+            Cancelar
           </button>
         </div>
       </form>

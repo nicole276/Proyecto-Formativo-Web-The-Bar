@@ -1,124 +1,355 @@
 // src/pages/landing/HomePage.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import TopNav from '../../components/Layout/TopNav';
-import ProductDetailModal from './ProductDetailModal';
-import LiquorIcon from '@mui/icons-material/Liquor';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
-// Datos simulados
-const featuredProducts = [
+// Imágenes para el carrusel
+const galleryImages = [
   {
     id: 1,
-    name: 'Licor de Caña Molendero',
-    category: 'Licores',
-    price: 55000,
-    image: 'https://licoreslarebaja.com/wp-content/uploads/2025/07/Licor-de-Cana-Molendero-700ml-1.png',
-    description: 'Licor de Caña Sin Azúcar 700 ml – 24% vol alcohol. La caña y el licor destilado de sus venas son una canción de la existencia con el ritmo esperanzador de la alegría, de la comunidad, de la vida eterna en infinitos ciclos de engranajes, que en cada vuelta extrae lo mejor de nuestras almas',
+    url: 'https://media.istockphoto.com/id/459018635/es/foto/botellas-de-bebidas-alcoh%C3%B3licas-en-un-fondo-blanco.jpg?s=612x612&w=0&k=20&c=Uz1e2Bg-9qLyPogZ_Rqb5w6KrJvcy7y8E6VTReIasKE=',
+    title: 'THE BAR',
+    description: 'Licores • Cigarrería • Confitería'
   },
   {
     id: 2,
-    name: 'Cigarrillo Chesterfield Blue - Medio',
-    category: 'Cigarrería',
-    price: 18000,
-    image: 'https://carulla.vtexassets.com/arquivos/ids/22117494/Cigllo-Cjtilla-Media-Blanco-Azul-MARLBORO-10-und-3521037_a.jpg?v=638895967920470000',
-    description: 'Sabor intenso y calidad internacional.',
+    url: 'https://media.istockphoto.com/id/586376654/es/foto/frascos-de-marcas-de-gran-variedad-de-licores-de-alta-graduaci%C3%B3n.jpg?s=612x612&w=0&k=20&c=6ONb_sB-0KMyHnIU2o6WcopMfY08ivGieemGhu6ju6U=',
+    title: 'THE BAR',
+    description: 'Licores • Cigarrería • Confitería'
   },
   {
     id: 3,
-    name: 'Galletas Festival',
-    category: 'Confitería',
-    price: 2500,
-    image: 'https://mundodulces17.com/wp-content/uploads/2023/03/festival-chocolate-x-4.jpg',
-    description: 'Deliciosas galletas rellenas de chocolate.',
+    url: 'https://licoreria247.pe/wp-content/uploads/2020/01/Horizontal-Adwrods-licoreria247-promociones-de-licores.png',
+    title: 'THE BAR',
+    description: 'Licores • Cigarrería • Confitería'
+  }
+];
+
+// Imágenes para la galería
+const photoGallery = [
+  {
+    id: 1,
+    url: 'https://licoresjunior.com/wp-content/uploads/2023/12/Licor-Ron-Viejo-de-Caldas-750-Nueva-Imagen.jpg',
+    title: 'Ron Viejo de Cladas'
   },
+  {
+    id: 2,
+    url: 'https://laprincipaldelicores.com/cdn/shop/files/ronmedellinpink750ml_6db5ffea-e0fc-42d6-8047-6e0b9fc4e71b.png?v=1709734443',
+    title: 'Ron MEDELLIN - Pink'
+  },
+  {
+    id: 3,
+    url: 'https://media.surtiplaza.co/dimen/7707096271682.png',
+    title: 'Smirnoff - Lulo'
+  },
+  {
+    id: 4,
+    url: 'https://laprincipaldelicores.com/cdn/shop/products/tequilajosecuervooroespecial375ml.png?v=1716500852&width=823',
+    title: 'Jose Cuervo'
+  },
+  {
+    id: 5,
+    url: 'https://privilegiogastrobar.com/cdn/shop/files/tequila-don-julio-70-cristalino-700-ml-5000281056265-2.webp?v=1720221084',
+    title: 'Don Julio 70'
+  },
+  {
+    id: 6,
+    url: 'https://laprincipaldelicores.com/cdn/shop/products/tequiladonjulioblanco.png?v=1679436602',
+    title: 'Don Julio'
+  }
 ];
 
 export default function HomePage() {
-  const [viewingProduct, setViewingProduct] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Auto-play del carrusel
+  useEffect(() => {
+    const interval = setInterval(() => {
+      nextImage();
+    }, 4000); // Cambia cada 4 segundos
+
+    return () => clearInterval(interval);
+  }, [currentImageIndex]);
+
+  const nextImage = () => {
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === galleryImages.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === 0 ? galleryImages.length - 1 : prevIndex - 1
+    );
+  };
+
+  const goToImage = (index) => {
+    setCurrentImageIndex(index);
+  };
 
   return (
-    <div style={{ paddingTop: '70px', backgroundColor: '#3B2E2A' }}>
+    <div style={{ paddingTop: '70px' }}>
       <TopNav />
 
-      {/* Hero */}
-      <div style={{ textAlign: 'center', padding: '3rem 1rem', backgroundColor: '#3B2E2A' }}>
-        <div
-            style={{
-                width: '120px',
-                height: '120px',
-                backgroundColor: '#F4B73F',
+      {/* Carrusel en la sección principal */}
+      <div style={{ 
+        position: 'relative', 
+        height: '400px',
+        overflow: 'hidden'
+      }}>
+        
+        {/* Imagen del carrusel */}
+        <img
+          src={galleryImages[currentImageIndex].url}
+          alt="THE BAR"
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: 'center',
+            transition: 'opacity 0.5s ease'
+          }}
+        />
+
+        {/* Overlay con texto */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          textAlign: 'center',
+          padding: '1rem',
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.1))'
+        }}>
+          <h1 style={{ 
+            fontSize: '3rem', 
+            fontWeight: '800', 
+            margin: '0 0 0.5rem',
+            textShadow: '2px 2px 8px rgba(0,0,0,0.8)'
+          }}>
+            THE BAR
+          </h1>
+          <p style={{ 
+            fontSize: '1.3rem', 
+            fontWeight: '500', 
+            margin: 0,
+            textShadow: '1px 1px 4px rgba(0,0,0,0.8)'
+          }}>
+            Licores • Cigarrería • Confitería
+          </p>
+        </div>
+
+        {/* Botones de navegación */}
+        <button
+          onClick={prevImage}
+          style={{
+            position: 'absolute',
+            left: '20px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            background: 'rgba(0, 0, 0, 0.5)',
+            color: 'white',
+            border: 'none',
+            width: '50px',
+            height: '50px',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            zIndex: 10,
+            transition: 'all 0.3s ease'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'rgba(0, 0, 0, 0.7)';
+            e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'rgba(0, 0, 0, 0.5)';
+            e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
+          }}
+        >
+          <ArrowBackIosIcon fontSize="medium" />
+        </button>
+
+        <button
+          onClick={nextImage}
+          style={{
+            position: 'absolute',
+            right: '20px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            background: 'rgba(0, 0, 0, 0.5)',
+            color: 'white',
+            border: 'none',
+            width: '50px',
+            height: '50px',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            zIndex: 10,
+            transition: 'all 0.3s ease'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'rgba(0, 0, 0, 0.7)';
+            e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'rgba(0, 0, 0, 0.5)';
+            e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
+          }}
+        >
+          <ArrowForwardIosIcon fontSize="medium" />
+        </button>
+
+        {/* Indicadores/puntos */}
+        <div style={{
+          position: 'absolute',
+          bottom: '20px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          display: 'flex',
+          gap: '12px',
+          zIndex: 10
+        }}>
+          {galleryImages.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToImage(index)}
+              style={{
+                width: '14px',
+                height: '14px',
                 borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 1.5rem',
-                boxShadow: '0 6px 20px rgba(244, 183, 63, 0.4)',
-            }}
-            >
-            <LiquorIcon sx={{ fontSize: '3.5rem', color: '#3B2E2A' }} />
-            </div>
-        <h1 style={{ color: 'white', fontSize: '2.2rem', fontWeight: '800', margin: '0 0 0.5rem' }}>
-          THE BAR
-        </h1>
-        <p style={{ color: '#666', fontSize: '1.1rem', fontWeight: '500', margin: 0 }}>
-          Licores • Cigarrería • Confitería
-        </p>
+                border: '2px solid white',
+                backgroundColor: index === currentImageIndex ? '#F4B73F' : 'transparent',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                padding: 0,
+                boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
+              }}
+              onMouseEnter={(e) => {
+                if (index !== currentImageIndex) {
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (index !== currentImageIndex) {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }
+              }}
+            />
+          ))}
+        </div>
       </div>
 
-      {/* Productos destacados */}
-        <div style={{ padding: '2rem 1rem', backgroundColor: '#fff' }}>
-        <h2 style={{ color: '#3B2E2A', fontSize: '1.8rem', fontWeight: '700', textAlign: 'center', marginBottom: '2rem' }}>
-            Productos Destacados
+      {/* Galería de fotos simple */}
+      <div style={{ 
+        padding: '3rem 1rem', 
+        backgroundColor: 'white',
+        borderTop: '1px solid #f0f0f0'
+      }}>
+        <h2 style={{ 
+          color: '#3B2E2A', 
+          fontSize: '2rem', 
+          fontWeight: '700', 
+          textAlign: 'center', 
+          marginBottom: '2rem'
+        }}>
+          Nuestra Galería
         </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
-            {featuredProducts.map((p) => (
+        
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+          gap: '1.5rem',
+          maxWidth: '1200px',
+          margin: '0 auto'
+        }}>
+          {photoGallery.map((photo) => (
             <div
-                key={p.id}
-                onClick={() => setViewingProduct(p)}
-                style={{
-                backgroundColor: 'white',
+              key={photo.id}
+              style={{
                 borderRadius: '12px',
                 overflow: 'hidden',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                transition: 'all 0.3s ease',
                 cursor: 'pointer',
-                transition: 'transform 0.2s',
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
-                onMouseLeave={(e) => e.currentTarget.style.transform = 'none'}
+                backgroundColor: '#f8f6f4'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-5px)';
+                e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+              }}
             >
-                {/* Imagen optimizada */}
-                <div style={{ height: '400px', overflow: 'hidden', backgroundColor: '#f8f6f4' }}>
+              <div style={{ 
+                height: '250px', 
+                overflow: 'hidden',
+                backgroundColor: '#f0f0f0'
+              }}>
                 <img
-                    src={p.image}
-                    alt={p.name}
-                    style={{
+                  src={photo.url}
+                  alt={photo.title}
+                  style={{
                     width: '100%',
                     height: '100%',
                     objectFit: 'cover',
                     objectPosition: 'center',
-                    transition: 'transform 0.3s',
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    transition: 'transform 0.5s ease'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
                 />
-                </div>
-                <div style={{ padding: '1rem' }}>
-                <h3 style={{ color: '#3B2E2A', fontSize: '1.2rem', margin: '0 0 0.3rem' }}>{p.name}</h3>
-                <p style={{ color: '#888', fontSize: '0.9rem', margin: '0 0 0.5rem', height: '2.4rem', overflow: 'hidden' }}>
-                    {p.description}
-                </p>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ color: '#D86633', fontWeight: '700', fontSize: '1.1rem' }}>
-                    ${p.price.toLocaleString()}
-                    </span>
-                    <span style={{ backgroundColor: '#F4B73F', color: 'white', padding: '0.2rem 0.6rem', borderRadius: '20px', fontSize: '0.8rem' }}>
-                    {p.category}
-                    </span>
-                </div>
-                </div>
+              </div>
+              <div style={{ 
+                padding: '1rem',
+                textAlign: 'center',
+                backgroundColor: 'white'
+              }}>
+                <h3 style={{ 
+                  color: '#3B2E2A', 
+                  fontSize: '1.1rem', 
+                  fontWeight: '600',
+                  margin: '0 0 0.3rem'
+                }}>
+                  {photo.title}
+                </h3>
+              </div>
             </div>
-            ))}
+          ))}
         </div>
+
+        {/* Texto descriptivo debajo de la galería */}
+        <div style={{ 
+          maxWidth: '800px', 
+          margin: '3rem auto 0',
+          textAlign: 'center',
+          padding: '0 1rem'
+        }}>
+          <p style={{ 
+            color: '#666', 
+            fontSize: '1.1rem', 
+            lineHeight: 1.6,
+            margin: 0
+          }}>
+            En THE BAR nos enorgullece ofrecer una amplia selección de productos de calidad. 
+            Desde los mejores licores hasta deliciosas confiterías, 
+            cada visita es una experiencia única.
+          </p>
         </div>
+      </div>
 
       {/* Sobre nosotros */}
       <div style={{ padding: '3rem 1rem', backgroundColor: '#f8f6f4' }}>
@@ -178,14 +409,6 @@ export default function HomePage() {
         <p>© 2025 THE BAR — Todos los derechos reservados</p>
         <p style={{ fontSize: '0.9rem', opacity: 0.8 }}>Licores • Cigarrería • Confitería</p>
       </footer>
-
-      {/* Modal de producto */}
-      {viewingProduct && (
-        <ProductDetailModal
-          product={viewingProduct}
-          onClose={() => setViewingProduct(null)}
-        />
-      )}
     </div>
   );
 }

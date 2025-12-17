@@ -9,7 +9,6 @@ export default function FormField({ label, name, value, onChange, error, type = 
           fontSize: '0.9rem',
           fontWeight: '600',
           marginBottom: '0.5rem',
-          border: '1px solid #e0e0e0'
         }}
       >
         {label}

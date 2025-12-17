@@ -12,7 +12,6 @@ import {
 import {
   PieChart,
   Pie,
-  Sector,
   Cell,
   BarChart,
   Bar,
@@ -202,12 +201,13 @@ function GeneralView({ data }) {
             borderRadius: '12px',
             padding: '1rem',
             boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            flex: '1 1 400px',
+            minWidth: '300px',
             width: '100%',
-            maxWidth: '400px',
           }}
         >
           <h2 style={{ color: '#3B2E2A', marginBottom: '1rem', textAlign: 'center' }}>Ventas vs Compras</h2>
-          <ResponsiveContainer width="100%" height={250}>
+          <ResponsiveContainer width="100%" height={300}>
             <LineChart data={data.general}>
               <CartesianGrid stroke="#eee" />
               <XAxis dataKey="name" />
@@ -227,12 +227,13 @@ function GeneralView({ data }) {
             borderRadius: '12px',
             padding: '1rem',
             boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            flex: '1 1 400px',
+            minWidth: '300px',
             width: '100%',
-            maxWidth: '400px',
           }}
         >
           <h2 style={{ color: '#3B2E2A', marginBottom: '1rem', textAlign: 'center' }}>Productos</h2>
-          <ResponsiveContainer width="100%" height={250}>
+          <ResponsiveContainer width="100%" height={300}>
             <LineChart data={data.productos}>
               <CartesianGrid stroke="#eee" />
               <XAxis dataKey="name" />
@@ -293,12 +294,13 @@ function VentasView({ data }) {
             borderRadius: '12px',
             padding: '1rem',
             boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            flex: '1 1 400px',
+            minWidth: '300px',
             width: '100%',
-            maxWidth: '400px',
           }}
         >
           <h2 style={{ color: '#3B2E2A', marginBottom: '1rem', textAlign: 'center' }}>Ventas por Período</h2>
-          <ResponsiveContainer width="100%" height={250}>
+          <ResponsiveContainer width="100%" height={300}>
             <LineChart data={data.ventas}>
               <CartesianGrid stroke="#eee" />
               <XAxis dataKey="name" />
@@ -317,12 +319,13 @@ function VentasView({ data }) {
             borderRadius: '12px',
             padding: '1rem',
             boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            flex: '1 1 400px',
+            minWidth: '300px',
             width: '100%',
-            maxWidth: '400px',
           }}
         >
           <h2 style={{ color: '#3B2E2A', marginBottom: '1rem', textAlign: 'center' }}>Distribución de Ventas</h2>
-          <ResponsiveContainer width="100%" height={250}>
+          <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
                 data={pieData}
@@ -399,12 +402,13 @@ function ComprasView({ data }) {
             borderRadius: '12px',
             padding: '1rem',
             boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            flex: '1 1 400px',
+            minWidth: '300px',
             width: '100%',
-            maxWidth: '400px',
           }}
         >
           <h2 style={{ color: '#3B2E2A', marginBottom: '1rem', textAlign: 'center' }}>Compras por Período</h2>
-          <ResponsiveContainer width="100%" height={250}>
+          <ResponsiveContainer width="100%" height={300}>
             <BarChart data={barData}>
               <CartesianGrid stroke="#eee" />
               <XAxis dataKey="name" />
@@ -425,12 +429,13 @@ function ComprasView({ data }) {
             borderRadius: '12px',
             padding: '1rem',
             boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            flex: '1 1 400px',
+            minWidth: '300px',
             width: '100%',
-            maxWidth: '400px',
           }}
         >
           <h2 style={{ color: '#3B2E2A', marginBottom: '1rem', textAlign: 'center' }}>Distribución de Compras</h2>
-          <ResponsiveContainer width="100%" height={250}>
+          <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
                 data={pieData}
@@ -507,12 +512,13 @@ function ProductosView({ data }) {
             borderRadius: '12px',
             padding: '1rem',
             boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            flex: '1 1 400px',
+            minWidth: '300px',
             width: '100%',
-            maxWidth: '400px',
           }}
         >
           <h2 style={{ color: '#3B2E2A', marginBottom: '1rem', textAlign: 'center' }}>Productos por Período</h2>
-          <ResponsiveContainer width="100%" height={250}>
+          <ResponsiveContainer width="100%" height={300}>
             <BarChart data={barData}>
               <CartesianGrid stroke="#eee" />
               <XAxis dataKey="name" />
@@ -533,12 +539,13 @@ function ProductosView({ data }) {
             borderRadius: '12px',
             padding: '1rem',
             boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            flex: '1 1 400px',
+            minWidth: '300px',
             width: '100%',
-            maxWidth: '400px',
           }}
         >
           <h2 style={{ color: '#3B2E2A', marginBottom: '1rem', textAlign: 'center' }}>Tendencia de Productos</h2>
-          <ResponsiveContainer width="100%" height={250}>
+          <ResponsiveContainer width="100%" height={300}>
             <LineChart data={lineData}>
               <CartesianGrid stroke="#eee" />
               <XAxis dataKey="name" />
@@ -576,12 +583,12 @@ export default function Dashboard() {
         overflow: 'hidden',
       }}
     >
-      {/* ✅ Bienvenida decorada — SUBIDA UN POCO */}
+      {/* Bienvenida decorada */}
       <div
         style={{
           textAlign: 'center',
           marginBottom: '1rem',
-          marginTop: '-0.1rem', // ✅ Subida
+          marginTop: '-0.1rem',
           position: 'relative',
           padding: '1.5rem',
           backgroundColor: 'white',
@@ -744,7 +751,7 @@ export default function Dashboard() {
         </div>
 
         <button
-          onClick={() => alert(`Exportando reporte ${view} (${filter})...`)}
+          onClick={() => alert(`Reporte ${view} (${filter}) exportado a PDF.`)}
           style={{
             padding: '0.75rem 1.2rem',
             backgroundColor: '#F4B73F',
@@ -760,7 +767,7 @@ export default function Dashboard() {
             boxShadow: '0 4px 12px rgba(244, 183, 63, 0.2)',
           }}
         >
-          📤 Exportar
+          📤 Exportar PDF
         </button>
       </div>
 

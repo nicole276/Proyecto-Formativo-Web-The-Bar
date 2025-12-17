@@ -47,22 +47,25 @@ export default function ClientsList() {
     }
   };
 
-  // ✅ Validar eliminación solo si está inactivo
-const handleDeleteConfirm = (client) => {
-  if (client.estado === 'activo') {
-    setAlert({
-      type: 'error',
-      message: `No se puede eliminar el cliente "${client.nombre}" porque está activo. Cambie su estado a "Inactivo" primero.`,
-    });
-    setTimeout(() => setAlert(null), 4000);
-    return;
-  }
-
-  setClientToDelete(client);
-  setShowDeleteDialog(true);
-};
+  const handleDeleteConfirm = () => {
+    if (clientToDelete) {
+      setClients(clients.filter(c => c.id !== clientToDelete.id));
+      setAlert({ type: 'success', message: `Cliente "${clientToDelete.nombre}" eliminado` });
+      setTimeout(() => setAlert(null), 2000);
+    }
+    setShowDeleteDialog(false);
+    setClientToDelete(null);
+  };
 
   const handleDelete = (client) => {
+    if (client.estado === 'activo') {
+      setAlert({
+        type: 'error',
+        message: `No se puede eliminar al cliente "${client.nombre}" porque está activo.`,
+      });
+      setTimeout(() => setAlert(null), 4000);
+      return;
+    }
     setClientToDelete(client);
     setShowDeleteDialog(true);
   };
@@ -87,6 +90,7 @@ const handleDeleteConfirm = (client) => {
     const labels = {
       'Cédula': 'Cédula',
       'Pasaporte': 'Pasaporte',
+      'Cédula de Extranjería' : 'Cédula de Extranjería'
     };
     return labels[tipo] || tipo;
   };
@@ -129,6 +133,7 @@ const handleDeleteConfirm = (client) => {
           >
             <option value="todos">Todos los documentos</option>
             <option value="Cédula">Cédula</option>
+            <option value="Cédula de Extranjería">Cédula de Extranjería</option>
             <option value="Pasaporte">Pasaporte</option>
           </select>
         </div>
@@ -300,56 +305,276 @@ const handleDeleteConfirm = (client) => {
         cancelColor="#6c757d"
       />
 
-      {/* Modales */}
+      {/* Modal de Ver Detalle - CON DISEÑO ACTUALIZADO */}
       {viewingClient && (
         <Modal
           isOpen={!!viewingClient}
-          title={`📄 Detalle del Cliente: ${viewingClient.nombre}`}
+          title="📄 Detalles del Cliente"
           onClose={() => setViewingClient(null)}
+          width="550px"
         >
-          <div style={{ padding: '1.5rem' }}>
-            <div style={{ backgroundColor: '#f8f6f4', borderRadius: '12px', padding: '1.2rem', marginBottom: '1rem' }}>
-              <h3 style={{ color: '#3B2E2A', marginBottom: '0.5rem' }}>Información Personal</h3>
-              <p><strong>Nombre:</strong> {viewingClient.nombre}</p>
-              <p><strong>Tipo de Documento:</strong> {getDocTypeLabel(viewingClient.tipoDocumento)}</p>
-              <p><strong>Número:</strong> {viewingClient.documento}</p>
+          <div style={{ 
+            backgroundColor: '#f8f6f4',
+            borderRadius: '12px',
+            padding: '1rem',
+            border: '1px solid #e0d9d2',
+            maxHeight: '80vh',
+            overflowY: 'auto'
+          }}>
+            {/* Header con nombre y estado */}
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'space-between',
+              marginBottom: '1.5rem',
+              backgroundColor: 'white',
+              borderRadius: '10px',
+              padding: '1rem',
+              border: '1px solid #e0d9d2',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+            }}>
+              <div>
+                <h1 style={{ 
+                  fontSize: '1.5rem', 
+                  fontWeight: 'bold', 
+                  color: '#3B2E2A', 
+                  margin: '0 0 0.3rem 0'
+                }}>
+                  {viewingClient.nombre}
+                </h1>
+                
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center',
+                  gap: '0.8rem',
+                  flexWrap: 'wrap'
+                }}>
+                  <span style={{ 
+                    fontSize: '0.9rem', 
+                    color: '#666',
+                    fontWeight: '500',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.3rem'
+                  }}>
+                    <span style={{ 
+                      color: '#F4B73F', 
+                      fontSize: '1.1rem'
+                    }}>📄</span>
+                    <strong style={{ color: '#3B2E2A' }}>{getDocTypeLabel(viewingClient.tipoDocumento)}:</strong> {viewingClient.documento}
+                  </span>
+                </div>
+              </div>
+              
+              {/* Estado - CORREGIDO: usa viewingClient.estado */}
+              <div style={{
+                padding: '0.4rem 0.9rem',
+                borderRadius: '20px',
+                backgroundColor: viewingClient.estado === 'activo' 
+                  ? 'rgba(40, 167, 69, 0.1)' 
+                  : 'rgba(220, 53, 69, 0.1)',
+                border: viewingClient.estado === 'activo' 
+                  ? '1px solid #28a745' 
+                  : '1px solid #dc3545',
+                color: viewingClient.estado === 'activo' ? '#28a745' : '#dc3545',
+                fontWeight: '600',
+                fontSize: '0.85rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                whiteSpace: 'nowrap',
+                flexShrink: 0
+              }}>
+                <span style={{ fontSize: '0.9rem' }}>
+                  {viewingClient.estado === 'activo' ? '✅' : '❌'}
+                </span>
+                <span>
+                  {viewingClient.estado === 'activo' ? 'Activo' : 'Inactivo'}
+                </span>
+              </div>
             </div>
 
-            <div style={{ backgroundColor: '#f8f6f4', borderRadius: '12px', padding: '1.2rem', marginBottom: '1rem' }}>
-              <h3 style={{ color: '#3B2E2A', marginBottom: '0.5rem' }}>Contacto</h3>
-              <p><strong>Teléfono:</strong> {viewingClient.telefono || '—'}</p>
-              <p><strong>Email:</strong> {viewingClient.email || '—'}</p>
-              <p><strong>Dirección:</strong> {viewingClient.direccion || '—'}</p>
+            {/* Sección de Contacto */}
+            <div style={{ 
+              backgroundColor: 'white', 
+              borderRadius: '10px', 
+              padding: '1rem',
+              marginBottom: '1rem',
+              border: '1px solid #e0d9d2',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+            }}>
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.5rem',
+                marginBottom: '1rem'
+              }}>
+                <span style={{ 
+                  color: '#F4B73F', 
+                  fontSize: '1.4rem'
+                }}>📞</span>
+                <h3 style={{ 
+                  fontSize: '1rem', 
+                  fontWeight: '700', 
+                  color: '#3B2E2A', 
+                  margin: 0
+                }}>
+                  Información de Contacto
+                </h3>
+              </div>
+              
+              <div style={{
+                padding: '0.8rem',
+                backgroundColor: '#fdfcf9',
+                borderRadius: '8px',
+                border: '1px solid #f0ece7'
+              }}>
+                <div style={{ display: 'grid', gap: '0.8rem' }}>
+                  {/* Teléfono */}
+                  <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0.5rem 0'
+                  }}>
+                    <div style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '0.5rem'
+                    }}>
+                      <span style={{ 
+                        color: '#F4B73F', 
+                        fontSize: '1.1rem'
+                      }}>📱</span>
+                      <span style={{ 
+                        fontWeight: '600', 
+                        color: '#3B2E2A',
+                        fontSize: '0.9rem'
+                      }}>Teléfono:</span>
+                    </div>
+                    <span style={{ 
+                      fontWeight: '600', 
+                      color: '#3B2E2A',
+                      fontSize: '0.95rem'
+                    }}>
+                      {viewingClient.telefono || '—'}
+                    </span>
+                  </div>
+                  
+                  {/* Línea divisoria */}
+                  <div style={{ 
+                    height: '1px', 
+                    backgroundColor: '#e0d9d2',
+                    margin: '0.2rem 0'
+                  }} />
+                  
+                  {/* Email */}
+                  <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0.5rem 0'
+                  }}>
+                    <div style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '0.5rem'
+                    }}>
+                      <span style={{ 
+                        color: '#F4B73F', 
+                        fontSize: '1.1rem'
+                      }}>📧</span>
+                      <span style={{ 
+                        fontWeight: '600', 
+                        color: '#3B2E2A',
+                        fontSize: '0.9rem'
+                      }}>Email:</span>
+                    </div>
+                    <span style={{ 
+                      fontWeight: '600', 
+                      color: '#3B2E2A',
+                      fontSize: '0.95rem'
+                    }}>
+                      {viewingClient.email || '—'}
+                    </span>
+                  </div>
+                  
+                  {/* Línea divisoria */}
+                  <div style={{ 
+                    height: '1px', 
+                    backgroundColor: '#e0d9d2',
+                    margin: '0.2rem 0'
+                  }} />
+                  
+                  {/* Dirección */}
+                  <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    padding: '0.5rem 0'
+                  }}>
+                    <div style={{ 
+                      display: 'flex', 
+                      alignItems: 'flex-start', 
+                      gap: '0.5rem',
+                      minWidth: '100px'
+                    }}>
+                      <span style={{ 
+                        color: '#F4B73F', 
+                        fontSize: '1.1rem',
+                        marginTop: '0.2rem'
+                      }}>🏠</span>
+                      <span style={{ 
+                        fontWeight: '600', 
+                        color: '#3B2E2A',
+                        fontSize: '0.9rem'
+                      }}>Dirección:</span>
+                    </div>
+                    <span style={{ 
+                      fontWeight: '500', 
+                      color: '#4b5563',
+                      fontSize: '0.9rem',
+                      textAlign: 'right',
+                      lineHeight: '1.4',
+                      flex: 1
+                    }}>
+                      {viewingClient.direccion || '—'}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div style={{ backgroundColor: '#f8f6f4', borderRadius: '12px', padding: '1.2rem' }}>
-              <h3 style={{ color: '#3B2E2A', marginBottom: '0.5rem' }}>Estado</h3>
-              <span
-                style={{
-                  padding: '0.2rem 0.6rem',
-                  borderRadius: '12px',
-                  backgroundColor: viewingClient.estado === 'activo' ? 'rgba(244, 183, 63, 0.2)' : 'rgba(216, 102, 51, 0.2)',
-                  color: viewingClient.estado === 'activo' ? '#F4B73F' : '#D86633',
-                  fontSize: '0.9rem',
-                  fontWeight: '600',
-                }}
-              >
-                {viewingClient.estado === 'activo' ? '🟢 Activo' : '🔴 Inactivo'}
-              </span>
-            </div>
-
-            <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+            {/* Botón de Cerrar */}
+            <div style={{ 
+              textAlign: 'center',
+              paddingTop: '1rem'
+            }}>
               <button
                 onClick={() => setViewingClient(null)}
                 style={{
-                  padding: '0.7rem 1.8rem',
-                  backgroundColor: '#e0e0e0',
-                  color: '#666',
+                  padding: '0.8rem 2.5rem',
+                  backgroundColor: '#3B2E2A',
+                  color: 'white',
                   border: 'none',
-                  borderRadius: '12px',
+                  borderRadius: '10px',
                   fontSize: '1rem',
                   fontWeight: '600',
                   cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 3px 6px rgba(59, 46, 42, 0.2)',
+                  width: '100%',
+                  maxWidth: '200px'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#2d241f';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 5px 10px rgba(59, 46, 42, 0.25)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#3B2E2A';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 3px 6px rgba(59, 46, 42, 0.2)';
                 }}
               >
                 Cerrar
@@ -362,11 +587,12 @@ const handleDeleteConfirm = (client) => {
       {showForm && (
         <Modal
           isOpen={showForm}
-          title={editingClient ? '✏️ Editar Cliente' : '✅ Registrar Cliente'}
+          title={editingClient ? 'Editar Cliente' : 'Registrar Nuevo Cliente'}
           onClose={() => {
             setShowForm(false);
             setEditingClient(null);
           }}
+          width="700px"
         >
           <ClientForm
             client={editingClient}

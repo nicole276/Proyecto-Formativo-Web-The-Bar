@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import FormField from '../../components/ui/FormField';
 import Alert from '../../components/ui/Alert';
-import ToggleSwitch from '../../components/ui/ToggleSwitch';
 
 export default function RoleForm({ role = null, onSave, onCancel }) {
   const [formData, setFormData] = useState({
     name: role?.name || '',
+    description: role?.description || '', // ✅ Nuevo campo
     status: role?.status || 'activo',
     modules: role?.modules || [],
   });
@@ -26,18 +26,21 @@ export default function RoleForm({ role = null, onSave, onCancel }) {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? (checked ? [...formData.modules, value] : formData.modules.filter(m => m !== value)) : value,
-    });
-    if (errors[name]) {
-      setErrors({ ...errors, [name]: '' });
+    if (type === 'checkbox') {
+      const newModules = checked
+        ? [...formData.modules, value]
+        : formData.modules.filter((m) => m !== value);
+      setFormData({ ...formData, modules: newModules });
+      if (errors.modules) setErrors({ ...errors, modules: '' });
+    } else {
+      setFormData({ ...formData, [name]: value });
+      if (errors[name]) setErrors({ ...errors, [name]: '' });
     }
   };
 
   const handleModuleToggle = (module) => {
     const newModules = formData.modules.includes(module)
-      ? formData.modules.filter(m => m !== module)
+      ? formData.modules.filter((m) => m !== module)
       : [...formData.modules, module];
     setFormData({ ...formData, modules: newModules });
     if (errors.modules) setErrors({ ...errors, modules: '' });
@@ -60,7 +63,12 @@ export default function RoleForm({ role = null, onSave, onCancel }) {
       return;
     }
 
-    onSave(formData);
+    // ✅ Incluye 'description' al guardar (puede ser vacía)
+    onSave({
+      ...formData,
+      // Normalizar: eliminar espacios extremos, pero permitir null/vacío
+      description: formData.description.trim() || null,
+    });
   };
 
   return (
@@ -68,9 +76,11 @@ export default function RoleForm({ role = null, onSave, onCancel }) {
       {alert && <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />}
 
       <form onSubmit={handleSubmit} style={{ marginTop: '1rem' }}>
+        {/* ✅ Grid de 2 columnas: Izquierda (Nombre + Descripción) / Derecha (Módulos) */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.8rem' }}>
-          {/* Columna 1: Nombre */}
+          {/* Columna 1: Nombre y Descripción */}
           <div>
+            {/* Nombre */}
             <FormField
               label="Nombre del Rol *"
               name="name"
@@ -79,7 +89,40 @@ export default function RoleForm({ role = null, onSave, onCancel }) {
               error={errors.name}
             />
 
-            
+            {/* Descripción ✅ */}
+            <div style={{ marginTop: '1.8rem' }}>
+              <label
+                style={{
+                  display: 'block',
+                  color: '#3B2E2A',
+                  fontSize: '0.9rem',
+                  fontWeight: '600',
+                  marginBottom: '0.8rem',
+                }}
+              >
+                Descripción
+                <span style={{ color: '#888', fontWeight: 'normal', marginLeft: '0.3rem' }}>
+                  (opcional)
+                </span>
+              </label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                rows="4"
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 1rem',
+                  borderRadius: '12px',
+                  border: '1px solid #e0d9d2',
+                  backgroundColor: 'white',
+                  color: '#3B2E2A',
+                  fontSize: '1rem',
+                  resize: 'vertical',
+                  fontFamily: 'inherit',
+                }}
+              />
+            </div>
           </div>
 
           {/* Columna 2: Módulos */}
@@ -94,7 +137,7 @@ export default function RoleForm({ role = null, onSave, onCancel }) {
                   marginBottom: '0.8rem',
                 }}
               >
-                Permisos * 
+                Permisos *
               </label>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem' }}>
                 {modules.map((module) => (
@@ -106,8 +149,12 @@ export default function RoleForm({ role = null, onSave, onCancel }) {
                       gap: '0.6rem',
                       padding: '0.6rem 1rem',
                       borderRadius: '12px',
-                      backgroundColor: formData.modules.includes(module) ? 'rgba(244, 183, 63, 0.1)' : 'white',
-                      border: `1px solid ${formData.modules.includes(module) ? '#F4B73F' : '#e0d9d2'}`,
+                      backgroundColor: formData.modules.includes(module)
+                        ? 'rgba(244, 183, 63, 0.1)'
+                        : 'white',
+                      border: `1px solid ${
+                        formData.modules.includes(module) ? '#F4B73F' : '#e0d9d2'
+                      }`,
                       transition: 'all 0.2s',
                       cursor: 'pointer',
                     }}
@@ -124,7 +171,16 @@ export default function RoleForm({ role = null, onSave, onCancel }) {
                 ))}
               </div>
               {errors.modules && (
-                <p style={{ color: '#e53e3e', fontSize: '0.85rem', marginTop: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                <p
+                  style={{
+                    color: '#e53e3e',
+                    fontSize: '0.85rem',
+                    marginTop: '0.8rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.3rem',
+                  }}
+                >
                   ⚠️ {errors.modules}
                 </p>
               )}
@@ -132,7 +188,15 @@ export default function RoleForm({ role = null, onSave, onCancel }) {
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', justifyContent: 'center' }}>
+        {/* Botones */}
+        <div
+          style={{
+            display: 'flex',
+            gap: '1rem',
+            marginTop: '1.5rem',
+            justifyContent: 'center',
+          }}
+        >
           <button
             type="submit"
             style={{
@@ -150,7 +214,7 @@ export default function RoleForm({ role = null, onSave, onCancel }) {
             onMouseOver={(e) => (e.target.style.transform = 'translateY(-2px)')}
             onMouseOut={(e) => (e.target.style.transform = 'none')}
           >
-            ✅ Guardar
+            Registar
           </button>
           <button
             type="button"
@@ -167,7 +231,7 @@ export default function RoleForm({ role = null, onSave, onCancel }) {
               transition: 'all 0.2s',
             }}
           >
-            ❌ Cancelar
+            Cancelar
           </button>
         </div>
       </form>

@@ -27,7 +27,7 @@ export default function ForgotPassword() {
   return (
     <div
       style={{
-        background: 'linear-gradient(135deg, #F4B73F 0%, #FFF9F0 40%, #ff9361ff 100%)',
+        background: '#FFF9F0',
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',

@@ -25,19 +25,27 @@ export default function RolesList() {
 
   const handleSave = (data) => {
     try {
-      if (editingRole) {
-        setRoles(roles.map(r => r.id === editingRole.id ? { ...r, ...data } : r));
-      } else {
-        setRoles([...roles, { id: Date.now(), ...data }]);
+      if (!Array.isArray(data.modules)) {
+        throw new Error('Módulos debe ser un arreglo');
       }
-      setAlert({ type: 'success', message: 'Registro con éxito' });
+
+      if (editingRole) {
+        setRoles(prev =>
+          prev.map(r => r.id === editingRole.id ? { ...r, ...data } : r)
+        );
+      } else {
+        setRoles(prev => [...prev, { id: Date.now(), ...data }]);
+      }
+
+      setAlert({ type: 'success', message: 'Registro guardado con éxito' });
       setTimeout(() => {
         setAlert(null);
         setShowForm(false);
         setEditingRole(null);
       }, 2000);
     } catch (err) {
-      setAlert({ type: 'error', message: 'Error al guardar' });
+      console.error('Error en handleSave:', err);
+      setAlert({ type: 'error', message: err.message || 'Error al guardar' });
       setTimeout(() => setAlert(null), 3000);
     }
   };
@@ -266,73 +274,253 @@ export default function RolesList() {
         cancelColor="#6c757d"
       />
 
-      {/* Modales de detalle y formulario */}
+      {/* Modal de Ver Detalle */}
       {viewingRole && (
         <Modal
           isOpen={!!viewingRole}
-          title={`📄 Detalle del Rol: ${viewingRole.name}`}
+          title={
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{ fontSize: '1.4rem' }}>📄</span>
+              <span style={{ color: '#3B2E2A', fontWeight: '700' }}>
+                Detalles del Rol: <span style={{ color: '#F4B73F' }}>{viewingRole.name}</span>
+              </span>
+            </div>
+          }
           onClose={() => setViewingRole(null)}
+          width="800px"
         >
-          <div style={{ padding: '1.5rem' }}>
-            <div style={{ backgroundColor: '#f8f6f4', borderRadius: '12px', padding: '1.2rem', marginBottom: '1.5rem' }}>
-              <h3 style={{ color: '#3B2E2A', marginBottom: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ fontSize: '1.2rem' }}>🏷️</span> Información General
-              </h3>
-              <p><strong>Nombre:</strong> <span style={{ color: '#3B2E2A', fontWeight: '600' }}>{viewingRole.name}</span></p>
-              <p>
-                <strong>Estado:</strong>{' '}
-                <span
-                  style={{
-                    padding: '0.2rem 0.6rem',
-                    borderRadius: '12px',
-                    backgroundColor: viewingRole.status === 'activo' ? 'rgba(244, 183, 63, 0.2)' : 'rgba(216, 102, 51, 0.2)',
-                    color: viewingRole.status === 'activo' ? '#F4B73F' : '#D86633',
+          <div style={{ 
+            backgroundColor: '#f8f6f4', 
+            borderRadius: '12px', 
+            padding: '1.5rem',
+            border: '1px solid #e0d9d2'
+          }}>
+            {/* Sección de Información Principal */}
+            <div style={{ 
+              backgroundColor: 'white', 
+              borderRadius: '10px', 
+              padding: '1.2rem',
+              marginBottom: '1rem',
+              border: '1px solid #e0d9d2',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+            }}>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: '1fr 1fr', 
+                gap: '1rem',
+                marginBottom: '1rem'
+              }}>
+                <div>
+                  <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '0.5rem',
+                    marginBottom: '0.3rem'
+                  }}>
+                    <span style={{ 
+                      color: '#F4B73F', 
+                      fontSize: '1.2rem',
+                      fontWeight: '600'
+                    }}>🏷️</span>
+                    <span style={{ 
+                      color: '#3B2E2A', 
+                      fontSize: '0.9rem',
+                      fontWeight: '600'
+                    }}>Nombre del Rol</span>
+                  </div>
+                  <div style={{
+                    backgroundColor: '#fdfcf9',
+                    border: '1px solid #f0ece7',
+                    borderRadius: '8px',
+                    padding: '0.8rem',
+                    color: '#3B2E2A',
+                    fontWeight: '600',
+                    fontSize: '1rem'
+                  }}>
+                    {viewingRole.name}
+                  </div>
+                </div>
+              </div>
+
+              {/* ✅ Descripción Mejorada */}
+              <div style={{ marginTop: '1rem' }}>
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '0.5rem',
+                  marginBottom: '0.5rem'
+                }}>
+                  <span style={{ 
+                    color: '#F4B73F', 
+                    fontSize: '1.2rem',
+                    fontWeight: '600'
+                  }}>📝</span>
+                  <h4 style={{ 
+                    color: '#3B2E2A', 
                     fontSize: '0.9rem',
                     fontWeight: '600',
-                  }}
-                >
-                  {viewingRole.status === 'activo' ? '🟢 Activo' : '🔴 Inactivo'}
-                </span>
-              </p>
-            </div>
-
-            <div style={{ backgroundColor: '#f8f6f4', borderRadius: '12px', padding: '1.2rem' }}>
-              <h3 style={{ color: '#3B2E2A', marginBottom: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ fontSize: '1.2rem' }}>🔑</span> Módulos Asignados
-              </h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '0.5rem' }}>
-                {viewingRole?.modules.map((module) => (
-                  <div
-                    key={module}
-                    style={{
-                      padding: '0.6rem 1rem',
-                      backgroundColor: 'white',
-                      borderRadius: '10px',
-                      border: '1px solid #e0d9d2',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
-                    }}
-                  >
-                    <span style={{ color: '#F4B73F', fontSize: '1.1rem' }}>✓</span>
-                    <span>{module}</span>
-                  </div>
-                ))}
+                    margin: 0
+                  }}>
+                    Descripción
+                  </h4>
+                </div>
+                <div style={{
+                  backgroundColor: '#fdfcf9',
+                  border: '1px solid #f0ece7',
+                  borderRadius: '10px',
+                  padding: '0.9rem',
+                  color: '#555',
+                  lineHeight: 1.6,
+                  fontSize: '0.95rem',
+                  minHeight: '4rem',
+                  display: 'flex',
+                  alignItems: viewingRole.description ? 'flex-start' : 'center',
+                }}>
+                  {viewingRole.description 
+                    ? <span style={{ whiteSpace: 'pre-wrap' }}>{viewingRole.description}</span>
+                    : <span style={{ 
+                        color: '#888', 
+                        fontStyle: 'italic',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem'
+                      }}>
+                        <span style={{ opacity: 0.5 }}>—</span>
+                        Sin descripción
+                        <span style={{ opacity: 0.5 }}>—</span>
+                      </span>
+                  }
+                </div>
               </div>
             </div>
 
-            <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+            {/* Sección de Módulos Asignados */}
+            <div style={{ 
+              backgroundColor: 'white', 
+              borderRadius: '10px', 
+              padding: '1.2rem',
+              border: '1px solid #e0d9d2',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+            }}>
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.5rem',
+                marginBottom: '1rem'
+              }}>
+                <span style={{ 
+                  color: '#F4B73F', 
+                  fontSize: '1.4rem',
+                  fontWeight: '600'
+                }}>🔑</span>
+                <h3 style={{ 
+                  color: '#3B2E2A', 
+                  fontSize: '1rem',
+                  fontWeight: '700',
+                  margin: 0
+                }}>
+                  Módulos Asignados ({viewingRole?.modules?.length || 0})
+                </h3>
+              </div>
+              
+              {viewingRole?.modules && viewingRole.modules.length > 0 ? (
+                <div style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', 
+                  gap: '0.8rem',
+                  maxHeight: '250px',
+                  overflowY: 'auto',
+                  padding: '0.5rem'
+                }}>
+                  {viewingRole.modules.map((module, index) => (
+                    <div
+                      key={index}
+                      style={{
+                        padding: '0.8rem 1rem',
+                        backgroundColor: '#fdfcf9',
+                        borderRadius: '10px',
+                        border: '2px solid #F4B73F',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.6rem',
+                        transition: 'all 0.2s ease',
+                        boxShadow: '0 2px 4px rgba(244, 183, 63, 0.1)'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#fff9eb';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 4px 8px rgba(244, 183, 63, 0.15)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#fdfcf9';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 2px 4px rgba(244, 183, 63, 0.1)';
+                      }}
+                    >
+                      <div style={{
+                        width: '8px',
+                        height: '8px',
+                        borderRadius: '50%',
+                        backgroundColor: '#F4B73F',
+                        flexShrink: 0
+                      }} />
+                      <span style={{ 
+                        color: '#3B2E2A', 
+                        fontWeight: '600',
+                        fontSize: '0.95rem'
+                      }}>
+                        {module}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{
+                  backgroundColor: '#fdfcf9',
+                  border: '1px dashed #e0d9d2',
+                  borderRadius: '10px',
+                  padding: '2rem',
+                  textAlign: 'center',
+                  color: '#888'
+                }}>
+                  <div style={{ fontSize: '2rem', marginBottom: '0.5rem', opacity: 0.5 }}>📭</div>
+                  <p style={{ margin: 0, fontWeight: '600' }}>No hay módulos asignados</p>
+                  <p style={{ margin: '0.3rem 0 0 0', fontSize: '0.9rem' }}>
+                    Este rol no tiene módulos asignados
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Botón de Cerrar */}
+            <div style={{ 
+              marginTop: '1.5rem', 
+              textAlign: 'center',
+              paddingTop: '1rem',
+            }}>
               <button
                 onClick={() => setViewingRole(null)}
                 style={{
-                  padding: '0.7rem 1.8rem',
-                  backgroundColor: '#e0e0e0',
-                  color: '#666',
-                  border: 'none',
-                  borderRadius: '12px',
+                  padding: '0.8rem 2rem',
+                  backgroundColor: '#3B2E2A',
+                  color: 'white',
+                  border: '1px solid #ccc',
+                  borderRadius: '10px',
                   fontSize: '1rem',
                   fontWeight: '600',
                   cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#3B2E2A';
+                  e.currentTarget.style.borderColor = 'black';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#3B2E2A';
+                  e.currentTarget.style.borderColor = '#3B2E2A';
+                  e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
                 Cerrar
@@ -342,14 +530,16 @@ export default function RolesList() {
         </Modal>
       )}
 
+      {/* ✅ Modal para Registrar/Editar Rol - AÑADIDO */}
       {showForm && (
         <Modal
           isOpen={showForm}
-          title={editingRole ? '✏️ Editar Rol' : '✅ Registrar Rol'}
+          title={editingRole ? '✏️ Editar Rol' : '✅ Registrar Nuevo Rol'}
           onClose={() => {
             setShowForm(false);
             setEditingRole(null);
           }}
+          width="700px"
         >
           <RoleForm
             role={editingRole}

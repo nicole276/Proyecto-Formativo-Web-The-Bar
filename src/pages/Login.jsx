@@ -40,7 +40,7 @@ export default function Login() {
   return (
     <div
       style={{
-        background: 'linear-gradient(135deg, #F4B73F 0%, #FFF9F0 40%, #ff9361ff 100%)',
+        background: '#FFF9F0',
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
@@ -50,7 +50,7 @@ export default function Login() {
     >
       <div
         style={{
-          backgroundColor: 'biege',
+          backgroundColor: 'whitw',
           borderRadius: '16px',
           boxShadow: '0 8px 32px rgba(59, 46, 42, 0.06)',
           width: '100%',

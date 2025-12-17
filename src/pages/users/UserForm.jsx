@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import FormField from '../../components/ui/FormField';
 import Alert from '../../components/ui/Alert';
-import ToggleSwitch from '../../components/ui/ToggleSwitch';
 
 export default function UserForm({ user = null, onSave, onCancel }) {
   const [formData, setFormData] = useState({
@@ -10,6 +9,7 @@ export default function UserForm({ user = null, onSave, onCancel }) {
     usuario: user?.usuario || '',
     contraseña: '',
     confirmar_contraseña: '',
+    descripcion: user?.descripcion || '', // ✅ nuevo campo
     estado: user?.estado || 'activo',
     rol: user?.rol || 'Vendedor',
   });
@@ -43,6 +43,7 @@ export default function UserForm({ user = null, onSave, onCancel }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -51,17 +52,36 @@ export default function UserForm({ user = null, onSave, onCancel }) {
       return;
     }
 
+    // ✅ Construcción segura del payload
+    const payload = {
+      nombre_completo: formData.nombre_completo.trim(),
+      email: formData.email.trim(),
+      usuario: formData.usuario.trim(),
+      descripcion: formData.descripcion.trim() || null, // ✅ incluido
+      estado: formData.estado,
+      rol: formData.rol,
+    };
+
+    if (formData.contraseña) {
+      payload.contraseña = formData.contraseña;
+    }
+
+    if (typeof onSave !== 'function') {
+      console.error('❌ onSave no es una función');
+      setAlert({ type: 'error', message: 'Error interno: acción no disponible' });
+      setTimeout(() => setAlert(null), 3000);
+      return;
+    }
+
     try {
-      // ✅ Al editar, no enviamos contraseña vacía
-      const payload = { ...formData };
-      if (user && !payload.contraseña) {
-        delete payload.contraseña;
-        delete payload.confirmar_contraseña;
-      }
       onSave(payload);
     } catch (err) {
-      setAlert({ type: 'error', message: 'Error al guardar' });
-      setTimeout(() => setAlert(null), 3000);
+      console.error('💥 Error en onSave:', err);
+      setAlert({ 
+        type: 'error', 
+        message: `Error al guardar: ${err.message || 'Desconocido'}` 
+      });
+      setTimeout(() => setAlert(null), 4000);
     }
   };
 
@@ -70,8 +90,9 @@ export default function UserForm({ user = null, onSave, onCancel }) {
       {alert && <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />}
 
       <form onSubmit={handleSubmit} style={{ marginTop: '1rem' }}>
-        {/* ✅ Dos columnas principales */}
+        {/* ✅ Dos columnas */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.8rem' }}>
+          
           {/* Columna 1: Datos básicos */}
           <div>
             <FormField
@@ -100,7 +121,7 @@ export default function UserForm({ user = null, onSave, onCancel }) {
             />
           </div>
 
-          {/* Columna 2: Contraseña + Rol + Estado */}
+          {/* Columna 2: Confirmar contraseña + Rol + ✅ Descripción debajo */}
           <div>
             <FormField
               label={user ? 'Confirmar Nueva Contraseña' : 'Confirmar Contraseña *'}
@@ -111,6 +132,7 @@ export default function UserForm({ user = null, onSave, onCancel }) {
               error={errors.confirmar_contraseña}
             />
 
+            {/* ✅ Rol */}
             <div style={{ marginBottom: '1.5rem' }}>
               <label
                 style={{
@@ -149,7 +171,40 @@ export default function UserForm({ user = null, onSave, onCancel }) {
               )}
             </div>
 
-            
+            {/* ✅ Descripción — debajo de Rol */}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label
+                style={{
+                  display: 'block',
+                  color: '#3B2E2A',
+                  fontSize: '0.9rem',
+                  fontWeight: '600',
+                  marginBottom: '0.5rem',
+                }}
+              >
+                Descripción
+                <span style={{ color: '#888', fontWeight: 'normal', marginLeft: '0.3rem' }}>
+                  (opcional)
+                </span>
+              </label>
+              <textarea
+                name="descripcion"
+                value={formData.descripcion || ''}
+                onChange={handleChange}
+                rows="3"
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 1rem',
+                  borderRadius: '8px',
+                  border: '1px solid #e0d9d2',
+                  backgroundColor: 'white',
+                  color: '#3B2E2A',
+                  fontSize: '1rem',
+                  resize: 'vertical',
+                  fontFamily: 'inherit',
+                }}
+              />
+            </div>
           </div>
         </div>
 
@@ -171,7 +226,7 @@ export default function UserForm({ user = null, onSave, onCancel }) {
             onMouseOver={(e) => (e.target.style.transform = 'translateY(-2px)')}
             onMouseOut={(e) => (e.target.style.transform = 'none')}
           >
-            ✅ {user ? 'Actualizar' : 'Registrar'}
+            {user ? 'Actualizar' : 'Registrar'}
           </button>
           <button
             type="button"
@@ -188,7 +243,7 @@ export default function UserForm({ user = null, onSave, onCancel }) {
               transition: 'all 0.2s',
             }}
           >
-            ❌ Cancelar
+            Cancelar
           </button>
         </div>
       </form>
